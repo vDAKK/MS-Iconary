@@ -175,11 +175,6 @@ const Index = () => {
                 <Sparkles className="w-4 h-4" />
                 {iconsData.length} icônes
               </span>
-              <span className="w-1 h-1 bg-muted-foreground rounded-full" />
-              <span className="flex items-center gap-2">
-                <Palette className="w-4 h-4" />
-                Mode sombre
-              </span>
             </div>
             
             <div className="text-xs text-muted-foreground/60">
