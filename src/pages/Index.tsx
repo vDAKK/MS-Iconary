@@ -58,19 +58,19 @@ const Index = () => {
             {/* Badge "Nouveau" */}
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-accent/20 text-accent-foreground text-sm font-medium rounded-full border border-accent/30">
               <Sparkles className="w-4 h-4" />
-              Galerie SVG Pro
+              Galerie SVG Microsoft
             </div>
             
             {/* Titre principal */}
             <h1 className="text-5xl md:text-6xl font-bold gradient-text leading-tight">
-              Collection d'Icônes SVG
+              Microsoft Iconary
             </h1>
             
             {/* Sous-titre */}
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
-              Une collection soigneusement sélectionnée d'icônes SVG professionnelles.
+              Une collection soigneusement sélectionnée d'icônes SVG des outils Microsoft.
               <br className="hidden md:block" />
-              <span className="text-primary font-medium">Cliquez pour copier comme image</span>, ou utilisez les actions pour le code SVG et le téléchargement.
+              <span className="text-primary font-medium">Cliquez pour copier en tant qu'image</span>, ou utilisez les actions pour le code SVG et le téléchargement.
             </p>
             
             {/* Barre de recherche */}
@@ -96,18 +96,6 @@ const Index = () => {
               </div>
               <div className="text-sm text-muted-foreground">
                 Icône{filteredIcons.length > 1 ? 's' : ''} disponible{filteredIcons.length > 1 ? 's' : ''}
-              </div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 px-4 py-2 glass rounded-lg border border-border/30">
-            <Palette className="w-5 h-5 text-accent-foreground" />
-            <div className="text-left">
-              <div className="text-sm text-muted-foreground">
-                Mode sombre
-              </div>
-              <div className="text-sm font-medium text-foreground">
-                Disponible
               </div>
             </div>
           </div>
@@ -195,7 +183,7 @@ const Index = () => {
             </div>
             
             <div className="text-xs text-muted-foreground/60">
-              Galerie d'icônes SVG professionnelle • Copie image, code SVG et téléchargement • Mode sombre disponible
+              MS-Iconary • Copie d'image, code SVG et téléchargement
             </div>
           </div>
         </div>
