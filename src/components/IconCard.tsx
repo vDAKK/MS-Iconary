@@ -1,5 +1,5 @@
 import { useClipboard } from '@/hooks/useClipboard';
-import { Check, Copy } from 'lucide-react';
+import { Check, Copy, Download, Code } from 'lucide-react';
 import { useState } from 'react';
 
 interface IconCardProps {
@@ -10,11 +10,28 @@ interface IconCardProps {
 }
 
 export const IconCard = ({ name, svg, className = '', style }: IconCardProps) => {
-  const { copyToClipboard, copied } = useClipboard();
+  const { copyImageToClipboard, copyTextToClipboard, downloadSvg, copied } = useClipboard();
   const [isHovered, setIsHovered] = useState(false);
+  const [showActions, setShowActions] = useState(false);
 
-  const handleCopy = () => {
-    copyToClipboard(svg, name);
+  const handleCopyImage = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    copyImageToClipboard(svg, name);
+  };
+
+  const handleCopyCode = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    copyTextToClipboard(svg, name);
+  };
+
+  const handleDownload = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    downloadSvg(svg, name);
+  };
+
+  const handleCardClick = () => {
+    // Action par défaut : copier l'image
+    copyImageToClipboard(svg, name);
   };
 
   return (
@@ -29,9 +46,15 @@ export const IconCard = ({ name, svg, className = '', style }: IconCardProps) =>
         ${className}
       `}
       style={style}
-      onClick={handleCopy}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleCardClick}
+      onMouseEnter={() => {
+        setIsHovered(true);
+        setShowActions(true);
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setTimeout(() => setShowActions(false), 200);
+      }}
     >
       {/* Effet de gradient au hover */}
       <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 via-primary-light/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-smooth" />
@@ -49,30 +72,68 @@ export const IconCard = ({ name, svg, className = '', style }: IconCardProps) =>
         {name}
       </p>
 
-      {/* Indicateur de copie */}
+      {/* Actions rapides */}
       <div className={`
-        absolute top-3 right-3 p-1.5 rounded-lg
-        bg-surface-glass backdrop-blur-sm
-        border border-border/30
+        absolute top-2 right-2 flex flex-col gap-1
         opacity-0 group-hover:opacity-100 
         transition-all duration-smooth transform
-        ${copied ? 'opacity-100 scale-110' : 'scale-95'}
         ${isHovered ? 'translate-y-0' : 'translate-y-2'}
       `}>
-        {copied ? (
-          <div className="w-4 h-4 text-accent-foreground animate-scale-in">
-            <Check size={16} />
-          </div>
-        ) : (
-          <div className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors duration-smooth">
-            <Copy size={16} />
-          </div>
+        {/* Copier image (action principale) */}
+        <button
+          onClick={handleCopyImage}
+          className={`
+            p-1.5 rounded-lg glass backdrop-blur-sm
+            border border-border/30 hover:border-primary/50
+            transition-all duration-smooth
+            ${copied ? 'bg-accent/20 border-accent scale-110' : 'hover:bg-primary/10'}
+          `}
+          title="Copier comme image"
+        >
+          {copied ? (
+            <Check className="w-3.5 h-3.5 text-accent-foreground animate-scale-in" />
+          ) : (
+            <Copy className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary" />
+          )}
+        </button>
+
+        {/* Actions secondaires (apparaissent au hover prolongé) */}
+        {showActions && (
+          <>
+            <button
+              onClick={handleCopyCode}
+              className="
+                p-1.5 rounded-lg glass backdrop-blur-sm
+                border border-border/30 hover:border-primary/50
+                hover:bg-primary/10 transition-all duration-smooth
+                animate-scale-in
+              "
+              title="Copier le code SVG"
+              style={{ animationDelay: '50ms' }}
+            >
+              <Code className="w-3.5 h-3.5 text-muted-foreground hover:text-primary" />
+            </button>
+
+            <button
+              onClick={handleDownload}
+              className="
+                p-1.5 rounded-lg glass backdrop-blur-sm
+                border border-border/30 hover:border-primary/50
+                hover:bg-primary/10 transition-all duration-smooth
+                animate-scale-in
+              "
+              title="Télécharger SVG"
+              style={{ animationDelay: '100ms' }}
+            >
+              <Download className="w-3.5 h-3.5 text-muted-foreground hover:text-primary" />
+            </button>
+          </>
         )}
       </div>
 
       {/* Badge "Copié" */}
       {copied && (
-        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 px-2 py-1 bg-accent text-accent-foreground text-xs font-medium rounded-md animate-scale-in shadow-md">
+        <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-accent text-accent-foreground text-xs font-medium rounded-md animate-scale-in shadow-lg border border-accent/30">
           Copié !
         </div>
       )}
@@ -85,6 +146,13 @@ export const IconCard = ({ name, svg, className = '', style }: IconCardProps) =>
         animate-shimmer bg-[length:200%_100%]
         transition-opacity duration-slow
       `} />
+
+      {/* Indicateur d'action principale */}
+      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-60 transition-opacity duration-smooth">
+        <div className="text-xs text-muted-foreground font-mono bg-surface-glass px-2 py-1 rounded border border-border/30">
+          Clic = Image
+        </div>
+      </div>
     </div>
   );
 };
