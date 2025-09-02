@@ -89,37 +89,35 @@ export const processViteIconModules = (
  * Script Node.js pour générer automatiquement la liste des icônes
  * 
  * Créer un fichier scripts/generate-icons.js :
- * 
- * const fs = require('fs');
- * const path = require('path');
- * 
- * const iconsDir = path.join(__dirname, '../public/icons');
- * const outputFile = path.join(__dirname, '../src/data/generated-icons.ts');
- * 
- * // Lire tous les fichiers SVG
- * const svgFiles = fs.readdirSync(iconsDir)
- *   .filter(file => file.endsWith('.svg'));
- * 
- * // Générer le code TypeScript
- * let tsContent = 'export const iconFiles = [\n';
- * svgFiles.forEach(file => {
- *   tsContent += `  '${file}',\n`;
- * });
- * tsContent += '];\n\n';
- * 
- * tsContent += 'export const iconsData = [\n';
- * svgFiles.forEach(file => {
- *   const name = file.replace('.svg', '');
- *   const svgContent = fs.readFileSync(path.join(iconsDir, file), 'utf8');
- *   tsContent += `  {\n    name: '${name}',\n    svg: \`${svgContent}\`,\n  },\n`;
- * });
- * tsContent += '];\n';
- * 
- * fs.writeFileSync(outputFile, tsContent);
- * console.log(`Généré ${svgFiles.length} icônes dans ${outputFile}`);
- * 
- * Puis ajouter dans package.json :
- * "scripts": {
- *   "generate-icons": "node scripts/generate-icons.js"
- * }
  */
+// const fs = require('fs');
+// const path = require('path');
+
+// const iconsDir = path.join(__dirname, '../public/icons');
+// const outputFile = path.join(__dirname, '../src/data/generated-icons.ts'); 
+
+// // Lire tous les fichiers SVG
+// const svgFiles = fs.readdirSync(iconsDir).filter(file => file.endsWith('.svg'));
+ 
+// // Générer le code TypeScript
+// let tsContent = 'export const iconFiles = [\n';
+// svgFiles.forEach(file => {
+//    tsContent += `  '${file}',\n`;
+//  });
+//  tsContent += '];\n\n';
+ 
+//  tsContent += 'export const iconsData = [\n';
+//  svgFiles.forEach(file => {
+//    const name = file.replace('.svg', '');
+//    const svgContent = fs.readFileSync(path.join(iconsDir, file), 'utf8');
+//    tsContent += `  {\n    name: '${name}',\n    svg: \`${svgContent}\`,\n  },\n`;
+//  });
+//  tsContent += '];\n';
+ 
+//  fs.writeFileSync(outputFile, tsContent);
+//  console.log(`Généré ${svgFiles.length} icônes dans ${outputFile}`);
+ 
+// // Puis ajouter dans package.json :
+//  "scripts": {
+//    "generate-icons": "node scripts/generate-icons.js"
+//  }
