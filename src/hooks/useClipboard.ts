@@ -66,13 +66,13 @@ export const useClipboard = () => {
       const blob = await new Promise<Blob>((resolve) => {
         canvas.toBlob((blob) => {
           resolve(blob!);
-        }, 'image/png');
+        }, 'image/svg+xml');
       });
 
       // Copier dans le presse-papier
       await navigator.clipboard.write([
         new ClipboardItem({
-          'image/png': blob
+          'image/svg+xml': blob
         })
       ]);
 
