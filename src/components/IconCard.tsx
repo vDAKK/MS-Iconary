@@ -55,7 +55,7 @@ export const IconCard = ({
     e.stopPropagation();
     console.log('Copying image for:', name);
     try {
-      await copyImageToClipboard(svg, name);
+      await copyImageToClipboard(cleanSvg(svg), name);
     } catch (error) {
       console.error('Error copying image:', error);
     }
@@ -66,7 +66,7 @@ export const IconCard = ({
     e.stopPropagation();
     console.log('Copying code for:', name);
     try {
-      await copyTextToClipboard(svg, name);
+      await copyTextToClipboard(cleanSvg(svg), name);
     } catch (error) {
       console.error('Error copying code:', error);
     }
@@ -77,7 +77,7 @@ export const IconCard = ({
     e.stopPropagation();
     console.log('Downloading:', name);
     try {
-      downloadSvg(svg, name);
+      downloadSvg(cleanSvg(svg), name);
     } catch (error) {
       console.error('Error downloading:', error);
     }
@@ -90,7 +90,7 @@ export const IconCard = ({
     }
     console.log('Card click for:', name);
     try {
-      await copyImageToClipboard(svg, name);
+      await copyImageToClipboard(cleanSvg(svg), name);
     } catch (error) {
       console.error('Error copying image:', error);
     }
