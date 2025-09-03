@@ -21,21 +21,25 @@ export const IconCard = ({
   } = useClipboard();
   const [isHovered, setIsHovered] = useState(false);
   const [showActions, setShowActions] = useState(false);
-  const handleCopyImage = (e: React.MouseEvent) => {
+
+  const handleCopyImage = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    copyImageToClipboard(svg, name);
+    await copyImageToClipboard(svg, name);
   };
-  const handleCopyCode = (e: React.MouseEvent) => {
+
+  const handleCopyCode = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    copyTextToClipboard(svg, name);
+    await copyTextToClipboard(svg, name);
   };
+
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
     downloadSvg(svg, name);
   };
-  const handleCardClick = () => {
+
+  const handleCardClick = async () => {
     // Action par défaut : copier l'image
-    copyImageToClipboard(svg, name);
+    await copyImageToClipboard(svg, name);
   };
   return <div className={`
         relative group cursor-pointer rounded-xl p-6 

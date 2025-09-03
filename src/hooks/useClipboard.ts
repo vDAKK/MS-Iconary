@@ -32,45 +32,13 @@ export const useClipboard = () => {
   // Fonction pour copier une image SVG
   const copyImageToClipboard = async (svgString: string, iconName?: string) => {
     try {
-      // Créer un canvas temporaire
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) throw new Error('Canvas non supporté');
-
-      // Créer une image à partir du SVG avec data URL
-      const img = new Image();
-      const svgData = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgString)))}`;
-
-      await new Promise((resolve, reject) => {
-        img.onload = resolve;
-        img.onerror = reject;
-        img.src = svgData;
-      });
-
-      // Dessiner l'image sur le canvas
-      canvas.width = 128;
-      canvas.height = 128;
-      
-      // Fond transparent
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // Dessiner le SVG centré
-      const size = 96;
-      const x = (canvas.width - size) / 2;
-      const y = (canvas.height - size) / 2;
-      ctx.drawImage(img, x, y, size, size);
-
-      // Convertir en blob PNG
-      const blob = await new Promise<Blob>((resolve) => {
-        canvas.toBlob((blob) => {
-          resolve(blob!);
-        }, 'image/png');
-      });
+      // Créer un blob SVG
+      const svgBlob = new Blob([svgString], { type: 'image/svg+xml' });
 
       // Copier dans le presse-papier
       await navigator.clipboard.write([
         new ClipboardItem({
-          'image/png': blob
+          'image/svg+xml': svgBlob
         })
       ]);
 
@@ -78,7 +46,7 @@ export const useClipboard = () => {
       
       toast({
         title: "Image copiée !",
-        description: `L'icône ${iconName || ''} a été copiée en tant qu'image`,
+        description: `L'icône ${iconName || ''} a été copiée en tant qu'image SVG`,
         duration: 2000,
       });
 
