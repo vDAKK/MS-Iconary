@@ -183,8 +183,21 @@ const Index = () => {
                 </span>
               </div>
             
-            <div className="text-xs text-muted-foreground/60">
-              MS-Iconary • Copie d'image, code SVG et téléchargement
+            <div className="space-y-2">
+              <div className="text-xs text-muted-foreground/60">
+                MS-Iconary • Copie d'image, code SVG et téléchargement
+              </div>
+              <div className="text-xs text-muted-foreground/50">
+                Réalisé par{' '}
+                <a 
+                  href="https://www.linkedin.com/in/david-ghesquiere/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-primary hover:text-primary-hover transition-colors underline"
+                >
+                  David GHESQUIERE
+                </a>
+              </div>
             </div>
           </div>
         </div>
