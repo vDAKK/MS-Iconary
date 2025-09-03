@@ -2,7 +2,7 @@ User-agent: *
 Allow: /
 
 # Sitemap
-Sitemap: https://ms-iconary.lovable.app/sitemap.xml
+Sitemap: https://ms-iconary.com/sitemap.xml
 
 # Crawl-delay for better performance
 Crawl-delay: 1
