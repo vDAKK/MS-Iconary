@@ -24,22 +24,37 @@ export const IconCard = ({
 
   const handleCopyImage = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    await copyImageToClipboard(svg, name);
+    try {
+      await copyImageToClipboard(svg, name);
+    } catch (error) {
+      console.error('Error copying image:', error);
+    }
   };
 
   const handleCopyCode = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    await copyTextToClipboard(svg, name);
+    try {
+      await copyTextToClipboard(svg, name);
+    } catch (error) {
+      console.error('Error copying code:', error);
+    }
   };
 
   const handleDownload = (e: React.MouseEvent) => {
     e.stopPropagation();
-    downloadSvg(svg, name);
+    try {
+      downloadSvg(svg, name);
+    } catch (error) {
+      console.error('Error downloading:', error);
+    }
   };
 
   const handleCardClick = async () => {
-    // Action par défaut : copier l'image
-    await copyImageToClipboard(svg, name);
+    try {
+      await copyImageToClipboard(svg, name);
+    } catch (error) {
+      console.error('Error copying image:', error);
+    }
   };
   return <div className={`
         relative group cursor-pointer rounded-xl p-6 
