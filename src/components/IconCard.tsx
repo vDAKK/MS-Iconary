@@ -23,7 +23,9 @@ export const IconCard = ({
   const [showActions, setShowActions] = useState(false);
 
   const handleCopyImage = async (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
+    console.log('Copying image for:', name);
     try {
       await copyImageToClipboard(svg, name);
     } catch (error) {
@@ -32,7 +34,9 @@ export const IconCard = ({
   };
 
   const handleCopyCode = async (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
+    console.log('Copying code for:', name);
     try {
       await copyTextToClipboard(svg, name);
     } catch (error) {
@@ -41,7 +45,9 @@ export const IconCard = ({
   };
 
   const handleDownload = (e: React.MouseEvent) => {
+    e.preventDefault();
     e.stopPropagation();
+    console.log('Downloading:', name);
     try {
       downloadSvg(svg, name);
     } catch (error) {
@@ -49,7 +55,12 @@ export const IconCard = ({
     }
   };
 
-  const handleCardClick = async () => {
+  const handleCardClick = async (e: React.MouseEvent) => {
+    // Ne pas déclencher si on clique sur un bouton
+    if ((e.target as HTMLElement).closest('button')) {
+      return;
+    }
+    console.log('Card click for:', name);
     try {
       await copyImageToClipboard(svg, name);
     } catch (error) {
