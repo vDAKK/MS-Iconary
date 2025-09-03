@@ -21,6 +21,7 @@ All icons included in this project come from official Microsoft documentation an
 - [Power Platform Icons](https://learn.microsoft.com/en-us/power-platform/guidance/icons)
 - [Microsoft Entra Icons](https://learn.microsoft.com/en-us/entra/architecture/architecture-icons)
 - [Microsoft 365 Icons](https://learn.microsoft.com/en-us/microsoft-365/solutions/architecture-icons-templates?view=o365-worldwide)
+- [Microsoft Fabric Icons](https://learn.microsoft.com/en-us/fabric/fundamentals/icons)
 
 All trademarks and copyrights are owned by Microsoft Corporation. This project is not affiliated with or endorsed by Microsoft.
 
