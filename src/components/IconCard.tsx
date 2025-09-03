@@ -166,10 +166,6 @@ export const IconCard = ({
       </button>
     </div>
 
-    {/* Badge "Copié" */}
-    {copied && <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-accent text-accent-foreground text-xs font-medium rounded-md animate-scale-in shadow-lg border border-accent/30">
-      Copié !
-    </div>}
 
     {/* Effet shimmer subtil */}
     <div className={`
