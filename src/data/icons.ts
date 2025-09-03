@@ -12,8 +12,49 @@ const iconModules = import.meta.glob('/src/icons/**/*.svg', {
   eager: true 
 });
 
+function cleanIconName(rawName: string): string {
+  let cleaned = rawName;
+  
+  // Remove numeric prefixes (e.g., "00028-", "00030-")
+  cleaned = cleaned.replace(/^\d+-/, '');
+  
+  // Remove common prefixes
+  cleaned = cleaned.replace(/^icon-service-/i, '');
+  
+  // Remove size suffixes (e.g., "_32", "_40", "_24")
+  cleaned = cleaned.replace(/_\d+_/g, '_');
+  
+  // Remove style suffixes (regular, filled, non-item, etc.)
+  cleaned = cleaned.replace(/_(regular|filled|non-item|outline|solid)$/i, '');
+  
+  // Replace hyphens and underscores with spaces
+  cleaned = cleaned.replace(/[-_]/g, ' ');
+  
+  // Remove content in parentheses but keep the word before if relevant
+  cleaned = cleaned.replace(/\s*\([^)]*\)/g, '');
+  
+  // Clean up multiple spaces
+  cleaned = cleaned.replace(/\s+/g, ' ').trim();
+  
+  // Capitalize each word properly
+  cleaned = cleaned
+    .split(' ')
+    .map(word => {
+      // Keep common acronyms uppercase
+      if (['AI', 'ML', 'API', 'UI', 'UX', 'SDK', 'URL', 'HTTP', 'CSS', 'HTML', 'JS'].includes(word.toUpperCase())) {
+        return word.toUpperCase();
+      }
+      // Capitalize first letter of each word
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(' ');
+  
+  return cleaned || rawName;
+}
+
 function extractIconName(path: string): string {
-  return path.split('/').pop()?.replace('.svg', '') || '';
+  const rawName = path.split('/').pop()?.replace('.svg', '') || '';
+  return cleanIconName(rawName);
 }
 
 function extractCategory(path: string): string {
