@@ -24,7 +24,10 @@ export const IconCard = ({
 
   // Nettoyer le SVG en supprimant les déclarations XML, DOCTYPE, entités et commentaires
   const cleanSvg = (svgContent: string): string => {
-    return svgContent
+    // Créer un ID unique basé sur le nom de l'icône
+    const uniqueId = name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
+    
+    let cleaned = svgContent
       // Supprimer la déclaration XML
       .replace(/<\?xml[^>]*\?>/g, '')
       // Supprimer les commentaires
@@ -38,6 +41,13 @@ export const IconCard = ({
       // Nettoyer les espaces multiples et les sauts de ligne
       .replace(/\s+/g, ' ')
       .trim();
+
+    // Rendre les ID uniques pour éviter les conflits entre SVG
+    cleaned = cleaned.replace(/id="([^"]+)"/g, `id="${uniqueId}_$1"`);
+    cleaned = cleaned.replace(/url\(#([^)]+)\)/g, `url(#${uniqueId}_$1)`);
+    cleaned = cleaned.replace(/href="#([^"]+)"/g, `href="#${uniqueId}_$1"`);
+    
+    return cleaned;
   };
 
   const handleCopyImage = async (e: React.MouseEvent) => {
