@@ -22,6 +22,24 @@ export const IconCard = ({
   const [isHovered, setIsHovered] = useState(false);
   const [showActions, setShowActions] = useState(false);
 
+  // Nettoyer le SVG en supprimant les déclarations XML, DOCTYPE, entités et commentaires
+  const cleanSvg = (svgContent: string): string => {
+    return svgContent
+      // Supprimer la déclaration XML
+      .replace(/<\?xml[^>]*\?>/g, '')
+      // Supprimer les commentaires
+      .replace(/<!--[\s\S]*?-->/g, '')
+      // Supprimer DOCTYPE avec ses entités
+      .replace(/<!DOCTYPE[^>]*\[[\s\S]*?\]>/g, '')
+      // Supprimer les références aux entités dans les attributs
+      .replace(/xmlns:\w+="&[^"]*;"/g, '')
+      // Supprimer les métadonnées
+      .replace(/<metadata[\s\S]*?<\/metadata>/g, '')
+      // Nettoyer les espaces multiples et les sauts de ligne
+      .replace(/\s+/g, ' ')
+      .trim();
+  };
+
   const handleCopyImage = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -92,7 +110,7 @@ export const IconCard = ({
     <div className="relative flex items-center justify-center h-12 w-12 mx-auto mb-4">
       <div 
         className="text-muted-foreground group-hover:text-primary transition-colors duration-smooth transform group-hover:scale-110 w-8 h-8 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-8 [&>svg]:max-h-8" 
-        dangerouslySetInnerHTML={{ __html: svg }} 
+        dangerouslySetInnerHTML={{ __html: cleanSvg(svg) }} 
       />
     </div>
 
