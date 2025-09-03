@@ -100,7 +100,8 @@ const Index = () => {
                 {filteredIcons.length}
               </div>
               <div className="text-sm text-muted-foreground">
-                Icône{filteredIcons.length > 1 ? 's' : ''} disponible{filteredIcons.length > 1 ? 's' : ''}
+                Icône{filteredIcons.length > 1 ? 's' : ''} affichée{filteredIcons.length > 1 ? 's' : ''} 
+                {filteredIcons.length === 50 ? ' (max)' : ''}
               </div>
             </div>
           </div>
