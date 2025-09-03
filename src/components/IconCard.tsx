@@ -154,7 +154,6 @@ export const IconCard = ({
 
     {/* Indicateur d'action principale */}
     <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-60 transition-opacity duration-smooth">
-
     </div>
   </div>;
 };
