@@ -1,14 +1,20 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+
+# Sitemap
+Sitemap: https://ms-iconary.lovable.app/sitemap.xml
+
+# Crawl-delay for better performance
+Crawl-delay: 1
+
+# Block access to admin areas (if any)
+Disallow: /admin/
+Disallow: /_next/
+Disallow: /api/
+
+# Allow all icon resources
+Allow: /src/icons/
+Allow: /*.svg$
+Allow: /*.png$
+Allow: /*.jpg$
+Allow: /*.jpeg$
