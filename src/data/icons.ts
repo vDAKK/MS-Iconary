@@ -15,13 +15,17 @@ const iconModules = import.meta.glob('/src/icons/**/*.svg', {
 function cleanIconName(rawName: string): string {
   let cleaned = rawName;
   
+  // Extract size info before cleaning (e.g., "_16", "_32", "_24")
+  const sizeMatch = rawName.match(/_(\d+)_/);
+  const size = sizeMatch ? sizeMatch[1] : null;
+  
   // Remove numeric prefixes (e.g., "00028-", "00030-")
   cleaned = cleaned.replace(/^\d+-/, '');
   
   // Remove common prefixes
   cleaned = cleaned.replace(/^icon-service-/i, '');
   
-  // Remove size suffixes (e.g., "_32", "_40", "_24")
+  // Remove size suffixes (e.g., "_32", "_40", "_24") 
   cleaned = cleaned.replace(/_\d+_/g, '_');
   
   // Remove style suffixes (regular, filled, non-item, etc.)
@@ -48,6 +52,11 @@ function cleanIconName(rawName: string): string {
       return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
     })
     .join(' ');
+  
+  // Add size suffix if available to differentiate variants
+  if (size) {
+    cleaned += ` ${size}px`;
+  }
   
   return cleaned || rawName;
 }
