@@ -19,11 +19,12 @@ function cleanIconName(rawName: string): string {
   const sizeMatch = rawName.match(/_(\d+)_/);
   const size = sizeMatch ? sizeMatch[1] : null;
   
-  // Remove numeric prefixes (e.g., "00028-", "00030-")
-  cleaned = cleaned.replace(/^\d+-/, '');
+  // Remove numeric prefixes (e.g., "00028-", "00030-", "030777508")
+  cleaned = cleaned.replace(/^\d+[-\s]?/, '');
   
-  // Remove common prefixes
-  cleaned = cleaned.replace(/^icon-service-/i, '');
+  // Remove common prefixes (case insensitive)
+  cleaned = cleaned.replace(/^icon[\s-]?service[\s-]?/i, '');
+  cleaned = cleaned.replace(/^icon[\s-]?/i, '');
   
   // Remove size suffixes (e.g., "_32", "_40", "_24") 
   cleaned = cleaned.replace(/_\d+_/g, '_');
