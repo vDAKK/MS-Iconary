@@ -75,13 +75,16 @@ export const IconCard = ({
         hover:-translate-y-1 hover:scale-[1.02]
         animate-fade-in
         ${className}
-      `} style={style} onClick={handleCardClick} onMouseEnter={() => {
+      `} style={style} onMouseEnter={() => {
       setIsHovered(true);
       setShowActions(true);
     }} onMouseLeave={() => {
       setIsHovered(false);
       setTimeout(() => setShowActions(false), 200);
     }}>
+    
+    {/* Zone cliquable pour la copie d'image (sans les boutons) */}
+    <div className="absolute inset-0 z-0" onClick={handleCardClick} />
     {/* Effet de gradient au hover */}
     <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 via-primary-light/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-smooth" />
 
@@ -100,7 +103,7 @@ export const IconCard = ({
 
     {/* Actions rapides */}
     <div className={`
-        absolute top-2 right-2 flex flex-col gap-1
+        absolute top-2 right-2 flex flex-col gap-1 z-10
         opacity-0 group-hover:opacity-100 
         transition-all duration-smooth transform
         ${isHovered ? 'translate-y-0' : 'translate-y-2'}
