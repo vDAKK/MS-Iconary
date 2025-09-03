@@ -1,6 +1,6 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
-import { Home, ArrowLeft } from "lucide-react";
+import { Home } from "lucide-react";
 
 const NotFound = () => {
   const location = useLocation();
@@ -50,9 +50,9 @@ const NotFound = () => {
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <a 
-            href="/" 
+        <div className="flex justify-center">
+          <Link 
+            to="/" 
             className="
               inline-flex items-center gap-3 px-6 py-3 
               bg-primary text-primary-foreground 
@@ -64,22 +64,7 @@ const NotFound = () => {
           >
             <Home className="w-5 h-5" />
             Retour à l'accueil
-          </a>
-          
-          <button
-            onClick={() => window.history.back()}
-            className="
-              inline-flex items-center gap-3 px-6 py-3
-              glass border border-border/50
-              text-foreground rounded-lg font-medium
-              hover:border-primary/30 hover:shadow-glow
-              transition-all duration-smooth
-              transform hover:-translate-y-1
-            "
-          >
-            <ArrowLeft className="w-5 h-5" />
-            Page précédente
-          </button>
+          </Link>
         </div>
 
         {/* Suggestions */}
@@ -88,15 +73,15 @@ const NotFound = () => {
             Vous cherchiez peut-être :
           </p>
           <div className="flex flex-wrap gap-2 justify-center">
-            <a href="/" className="px-3 py-1 text-xs bg-muted/50 text-muted-foreground hover:text-foreground rounded-md transition-colors duration-smooth">
+            <Link to="/" className="px-3 py-1 text-xs bg-muted/50 text-muted-foreground hover:text-foreground rounded-md transition-colors duration-smooth">
               Galerie d'icônes
-            </a>
-            <a href="/?q=home" className="px-3 py-1 text-xs bg-muted/50 text-muted-foreground hover:text-foreground rounded-md transition-colors duration-smooth">
+            </Link>
+            <Link to="/?q=home" className="px-3 py-1 text-xs bg-muted/50 text-muted-foreground hover:text-foreground rounded-md transition-colors duration-smooth">
               Icônes populaires
-            </a>
-            <a href="/?q=ui" className="px-3 py-1 text-xs bg-muted/50 text-muted-foreground hover:text-foreground rounded-md transition-colors duration-smooth">
+            </Link>
+            <Link to="/?q=ui" className="px-3 py-1 text-xs bg-muted/50 text-muted-foreground hover:text-foreground rounded-md transition-colors duration-smooth">
               Icônes interface
-            </a>
+            </Link>
           </div>
         </div>
       </div>
