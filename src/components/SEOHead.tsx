@@ -12,8 +12,8 @@ export const SEOHead = ({
   title = "MS-Iconary - Collection d'Icônes SVG Microsoft | Copie en 1 Clic",
   description = "Collection premium d'icônes SVG Microsoft avec copie d'image, code SVG et téléchargement en 1 clic. Plus de 100 icônes Azure, Office, Teams optimisées pour développeurs.",
   keywords = "icônes SVG Microsoft, Azure icons, Office icons, Teams icons, téléchargement SVG, copie icônes, développeur, design",
-  canonical = "https://ms-iconary.lovable.app/",
-  ogImage = "https://ms-iconary.lovable.app/favicon.ico"
+  canonical = "https://ms-iconary.com/",
+  ogImage = "https://ms-iconary.com/favicon.ico"
 }: SEOHeadProps) => {
   
   useEffect(() => {
