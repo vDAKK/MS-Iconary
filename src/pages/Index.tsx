@@ -21,20 +21,25 @@ const Index = () => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Filtrage des icônes basé sur la recherche
+  // Filtrage des icônes basé sur la recherche avec limite de performance
   const filteredIcons = useMemo(() => {
-    if (!searchQuery.trim()) return iconsData;
-    
     const query = searchQuery.toLowerCase().trim();
-    return iconsData.filter(icon => {
-      const nameMatch = icon.name.toLowerCase().includes(query);
-      const categoryMatch = icon.category?.toLowerCase().includes(query);
-      const keywordsMatch = icon.keywords?.some(keyword => 
-        keyword.toLowerCase().includes(query)
-      );
-      
-      return nameMatch || categoryMatch || keywordsMatch;
-    });
+    let result = iconsData;
+    
+    if (query) {
+      result = iconsData.filter(icon => {
+        const nameMatch = icon.name.toLowerCase().includes(query);
+        const categoryMatch = icon.category?.toLowerCase().includes(query);
+        const keywordsMatch = icon.keywords?.some(keyword => 
+          keyword.toLowerCase().includes(query)
+        );
+        
+        return nameMatch || categoryMatch || keywordsMatch;
+      });
+    }
+    
+    // Limiter à 50 icônes pour éviter les lags
+    return result.slice(0, 50);
   }, [searchQuery]);
 
   return (
@@ -159,23 +164,23 @@ const Index = () => {
       {/* Footer */}
       <footer className="border-t border-border/30 glass backdrop-blur-xl mt-auto">
         <div className="container mx-auto px-6 py-12">
-          <div className="text-center space-y-6">
-            <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
-              <span className="flex items-center gap-2">
-                <Copy className="w-4 h-4" />
-                Copie image & code
-              </span>
-              <span className="w-1 h-1 bg-muted-foreground rounded-full" />
-              <span className="flex items-center gap-2">
-                <Download className="w-4 h-4" />
-                Téléchargement SVG
-              </span>
-              <span className="w-1 h-1 bg-muted-foreground rounded-full" />
-              <span className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                {iconsData.length} icônes
-              </span>
-            </div>
+            <div className="text-center space-y-6">
+              <div className="flex items-center justify-center gap-6 text-sm text-muted-foreground">
+                <span className="flex items-center gap-2">
+                  <Copy className="w-4 h-4" />
+                  Copie image & code
+                </span>
+                <span className="w-1 h-1 bg-muted-foreground rounded-full" />
+                <span className="flex items-center gap-2">
+                  <Download className="w-4 h-4" />
+                  Téléchargement SVG
+                </span>
+                <span className="w-1 h-1 bg-muted-foreground rounded-full" />
+                <span className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4" />
+                  {iconsData.length} icônes (50 max affichées)
+                </span>
+              </div>
             
             <div className="text-xs text-muted-foreground/60">
               MS-Iconary • Copie d'image, code SVG et téléchargement

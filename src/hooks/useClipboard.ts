@@ -37,46 +37,43 @@ export const useClipboard = () => {
       const ctx = canvas.getContext('2d');
       if (!ctx) throw new Error('Canvas non supporté');
 
-      // Créer une image à partir du SVG
+      // Créer une image à partir du SVG avec data URL
       const img = new Image();
-      const svgBlob = new Blob([svgString], { type: 'image/svg+xml' });
-      const url = URL.createObjectURL(svgBlob);
+      const svgData = `data:image/svg+xml;base64,${btoa(unescape(encodeURIComponent(svgString)))}`;
 
       await new Promise((resolve, reject) => {
         img.onload = resolve;
         img.onerror = reject;
-        img.src = url;
+        img.src = svgData;
       });
 
       // Dessiner l'image sur le canvas
-      canvas.width = 64;  // Taille fixe pour la copie
-      canvas.height = 64;
+      canvas.width = 128;
+      canvas.height = 128;
       
-      // Fond blanc pour la lisibilité
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Fond transparent
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
       
       // Dessiner le SVG centré
-      const size = 48; // Taille de l'icône
+      const size = 96;
       const x = (canvas.width - size) / 2;
       const y = (canvas.height - size) / 2;
       ctx.drawImage(img, x, y, size, size);
 
-      // Convertir en blob
+      // Convertir en blob PNG
       const blob = await new Promise<Blob>((resolve) => {
         canvas.toBlob((blob) => {
           resolve(blob!);
-        }, 'image/svg+xml');
+        }, 'image/png');
       });
 
       // Copier dans le presse-papier
       await navigator.clipboard.write([
         new ClipboardItem({
-          'image/svg+xml': blob
+          'image/png': blob
         })
       ]);
 
-      URL.revokeObjectURL(url);
       setCopied(true);
       
       toast({
