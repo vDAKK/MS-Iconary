@@ -188,8 +188,15 @@ const Index = () => {
                 <span className="text-primary font-medium">Cliquez pour copier en tant qu'image</span>, ou utilisez les actions pour le code SVG et le téléchargement.
               </p>
               
-              {/* Zone de recherche */}
-              <div className="flex justify-center">
+              {/* Zone de recherche et filtres */}
+              <div className="flex items-center justify-center gap-3">
+                <AdvancedFilters
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                  availableCategories={availableCategories}
+                  favoritesCount={favoritesCount}
+                  onClearFavorites={clearFavorites}
+                />
                 <SearchBar 
                   value={searchQuery} 
                   onChange={setSearchQuery}
@@ -197,33 +204,17 @@ const Index = () => {
                 />
               </div>
 
-              {/* Statistiques et filtres */}
-              <div className="flex flex-col items-center space-y-4">
-                <div className="flex items-center justify-center gap-4">
-                  <p className="text-muted-foreground text-sm">
-                    {visibleCount} icône{visibleCount > 1 ? 's' : ''} affichée{visibleCount > 1 ? 's' : ''} 
-                    {processedIcons.length !== visibleCount && ` sur ${processedIcons.length} total${processedIcons.length > 1 ? 'es' : ''}`}
-                    {favoritesCount > 0 && (
-                      <span className="ml-2 text-red-500">
-                        • {favoritesCount} favori{favoritesCount > 1 ? 's' : ''}
-                      </span>
-                    )}
-                  </p>
-                  
-                  {/* Bouton filtres à côté des stats */}
-                  <AdvancedFilters
-                    filters={filters}
-                    onFiltersChange={setFilters}
-                    availableCategories={availableCategories}
-                    favoritesCount={favoritesCount}
-                    onClearFavorites={clearFavorites}
-                  />
-                </div>
-                
-                <div className="text-xs text-muted-foreground/80 flex items-center justify-center gap-2">
-                  <kbd className="px-2 py-1 bg-muted/30 rounded text-xs border border-border/30">Ctrl+K</kbd>
-                  pour rechercher
-                </div>
+              {/* Statistiques */}
+              <div className="text-center">
+                <p className="text-muted-foreground text-sm">
+                  {visibleCount} icône{visibleCount > 1 ? 's' : ''} affichée{visibleCount > 1 ? 's' : ''} 
+                  {processedIcons.length !== visibleCount && ` sur ${processedIcons.length} total${processedIcons.length > 1 ? 'es' : ''}`}
+                  {favoritesCount > 0 && (
+                    <span className="ml-2 text-red-500">
+                      • {favoritesCount} favori{favoritesCount > 1 ? 's' : ''}
+                    </span>
+                  )}
+                </p>
               </div>
             </div>
           </div>
