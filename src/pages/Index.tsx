@@ -190,7 +190,7 @@ const Index = () => {
               
               {/* Zone de recherche et filtres */}
               <div className="flex items-center justify-center">
-                <div className="flex items-stretch max-w-2xl">
+                <div className="flex items-stretch max-w-2xl gap-0.5">
                   <AdvancedFilters
                     filters={filters}
                     onFiltersChange={setFilters}
