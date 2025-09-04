@@ -40,19 +40,33 @@ const Index = () => {
   useEffect(() => {
     const initSemanticSearch = async () => {
       try {
+        console.log('🚀 Starting semantic search initialization...');
         setIsSemanticLoading(true);
+        
+        console.log('📚 Initializing SemanticSearchService...');
         await SemanticSearchService.initialize();
+        console.log('✅ SemanticSearchService initialized');
+        
+        console.log('🧠 Generating icon embeddings...');
         await SemanticSearchService.generateIconEmbeddings(iconsData);
+        console.log('✅ Icon embeddings generated');
+        
         setIsSemanticReady(true);
+        console.log('🎉 Semantic search fully ready!');
       } catch (error) {
-        console.error('Failed to initialize semantic search:', error);
+        console.error('❌ Failed to initialize semantic search:', error);
+        setIsSemanticReady(false);
       } finally {
+        console.log('🔄 Setting isSemanticLoading to false');
         setIsSemanticLoading(false);
       }
     };
 
     // Initialiser en arrière-plan après un court délai
-    setTimeout(initSemanticSearch, 1000);
+    setTimeout(() => {
+      console.log('⏰ Starting semantic search initialization (delayed)');
+      initSemanticSearch();
+    }, 1000);
   }, []);
 
   // Gestion des raccourcis clavier
@@ -286,7 +300,7 @@ const Index = () => {
                 {isSemanticLoading && (
                   <div className="flex items-center justify-center mt-2 text-xs text-muted-foreground">
                     <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                    Initialisation de la recherche sémantique...
+                    Initialisation de la recherche sémantique... (Debug: loading={isSemanticLoading.toString()}, ready={isSemanticReady.toString()})
                   </div>
                 )}
               </div>
