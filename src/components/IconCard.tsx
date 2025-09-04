@@ -294,13 +294,11 @@ export const IconCard = ({
         ">
           <div 
             className="
-              text-foreground group-hover:text-primary 
+              icon-container
               transition-colors duration-smooth 
               w-6 h-6 flex items-center justify-center 
               [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-6 [&>svg]:max-h-6
-              [&>svg]:filter [&>svg]:drop-shadow-sm
-              [&>svg]:brightness-0 [&>svg]:invert-0
-              dark:[&>svg]:brightness-0 dark:[&>svg]:invert
+              [&>svg]:drop-shadow-sm
             " 
             dangerouslySetInnerHTML={{ __html: cleanSvg(svg) }} 
           />
