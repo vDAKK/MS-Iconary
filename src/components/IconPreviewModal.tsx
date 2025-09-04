@@ -1,11 +1,11 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Download, Palette, Copy, RotateCcw } from 'lucide-react';
 import { useClipboard } from '@/hooks/useClipboard';
 import { useToast } from '@/hooks/use-toast';
+import { ColorPicker } from '@/components/ColorPicker';
 
 interface IconPreviewModalProps {
   isOpen: boolean;
@@ -256,35 +256,17 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
             </div>
             
             {extractedColors.length > 0 ? (
-              <div className="space-y-4 max-h-60 overflow-y-auto pr-2">
+              <div className="space-y-4 max-h-80 overflow-y-auto pr-2">
                 {extractedColors.map((color, index) => (
-                  <div key={color} className="flex items-center gap-3">
-                    <Label className="text-sm font-medium w-16 flex-shrink-0">
+                  <div key={color} className="space-y-2">
+                    <Label className="text-sm font-medium">
                       Couleur {index + 1}
                     </Label>
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      {/* Couleur originale */}
-                      <div 
-                        className="w-8 h-8 rounded border border-border flex-shrink-0"
-                        style={{ backgroundColor: color }}
-                        title={`Original: ${color}`}
-                      />
-                      <span className="text-xs text-muted-foreground flex-shrink-0">→</span>
-                      {/* Nouvelle couleur */}
-                      <Input
-                        type="color"
-                        value={colors[color] || color}
-                        onChange={(e) => handleColorChange(color, e.target.value)}
-                        className="w-12 h-8 p-0 border-border cursor-pointer flex-shrink-0"
-                      />
-                      <Input
-                        type="text"
-                        value={colors[color] || color}
-                        onChange={(e) => handleColorChange(color, e.target.value)}
-                        className="w-20 text-xs flex-shrink-0"
-                        placeholder="#000000"
-                      />
-                    </div>
+                    <ColorPicker
+                      value={colors[color] || color}
+                      onChange={(newColor) => handleColorChange(color, newColor)}
+                      originalColor={color}
+                    />
                   </div>
                 ))}
               </div>
