@@ -56,7 +56,7 @@ export const AdvancedFilters = ({
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="relative">
+        <Button variant="outline" className="relative h-12 px-4 rounded-r-none border-r-0">
           <Filter className="w-4 h-4 mr-2" />
           Filtres
           {hasActiveFilters && (

@@ -19,7 +19,7 @@ export const SearchBar = ({
   };
 
   return (
-    <div className={`relative max-w-lg mx-auto ${className}`}>
+    <div className={`relative ${className}`}>
       <div className="relative group">
         {/* Icône de recherche */}
         <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors duration-smooth w-5 h-5" />
@@ -31,11 +31,11 @@ export const SearchBar = ({
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           className="
-            pl-12 pr-12 h-14 text-base
+            pl-12 pr-12 h-12 text-base
             glass border-2 border-border/50
             focus:border-primary focus:shadow-glow
             transition-all duration-smooth
-            rounded-xl
+            rounded-l-none border-l-0
             placeholder:text-muted-foreground/70
             font-medium
           "
