@@ -66,6 +66,44 @@ export const IconCard = ({
     cleaned = cleaned.replace(/url\(#([^)]+)\)/g, `url(#${uniqueId}_$1)`);
     cleaned = cleaned.replace(/href="#([^"]+)"/g, `href="#${uniqueId}_$1"`);
     
+    // SOLUTION AGRESSIVE : Forcer currentColor pour les icônes monocouleurs problématiques
+    const isMonochromeIcon = (svg: string): boolean => {
+      // Détecte si l'icône utilise des couleurs problématiques (gris, noir, blanc)
+      const problematicColors = [
+        '#000000', '#000', '#333333', '#333', '#666666', '#666', 
+        '#999999', '#999', '#212121', '#424242', 'black', 'gray', 'grey',
+        '#ffffff', '#fff', 'white', '#f0f0f0', '#e0e0e0', '#d0d0d0'
+      ];
+      
+      // Vérifie si l'icône contient uniquement des couleurs problématiques
+      const hasProblematicColors = problematicColors.some(color => 
+        svg.includes(`fill="${color}"`) || 
+        svg.includes(`stroke="${color}"`)
+      );
+      
+      // Vérifie si l'icône n'a pas de couleurs définies (paths sans fill/stroke)
+      const hasNoColors = !svg.includes('fill=') && !svg.includes('stroke=') && svg.includes('path');
+      
+      // Vérifie qu'il n'y a pas de couleurs vives (rouge, vert, bleu, etc.)
+      const hasNoVividColors = !/#[0-9a-fA-F]{3,6}/.test(svg) || 
+        !svg.match(/#(?!000|fff|333|666|999|f0f|e0e|d0d)[0-9a-fA-F]{3,6}/);
+      
+      return hasProblematicColors || hasNoColors;
+    };
+
+    if (isMonochromeIcon(cleaned)) {
+      // Forcer currentColor pour toutes les couleurs problématiques
+      cleaned = cleaned
+        // Remplacer les fills problématiques
+        .replace(/fill="(#000000|#000|#333333|#333|#666666|#666|#999999|#999|#212121|#424242|black|gray|grey|#ffffff|#fff|white|#f0f0f0|#e0e0e0|#d0d0d0)"/g, 'fill="currentColor"')
+        // Remplacer les strokes problématiques  
+        .replace(/stroke="(#000000|#000|#333333|#333|#666666|#666|#999999|#999|#212121|#424242|black|gray|grey|#ffffff|#fff|white|#f0f0f0|#e0e0e0|#d0d0d0)"/g, 'stroke="currentColor"')
+        // Ajouter fill="currentColor" si aucun fill n'est défini sur les paths
+        .replace(/<path(?![^>]*fill=)([^>]*)>/g, '<path$1 fill="currentColor">')
+        // Ajouter currentColor aux SVG sans couleur définie
+        .replace(/<svg(?![^>]*fill=)([^>]*>)/g, '<svg$1').replace(/<svg([^>]*)>/, '<svg$1 fill="currentColor">');
+    }
+    
     return cleaned;
   };
 
