@@ -61,7 +61,10 @@ export const useInfiniteScroll = <T>(
       const windowHeight = window.innerHeight;
       const docHeight = document.documentElement.offsetHeight;
 
-      if (scrollTop + windowHeight >= docHeight - threshold) {
+      // Utiliser un threshold plus petit pour laisser plus d'espace au footer
+      const adjustedThreshold = Math.min(threshold, 150);
+      
+      if (scrollTop + windowHeight >= docHeight - adjustedThreshold) {
         loadMore();
       }
     };
