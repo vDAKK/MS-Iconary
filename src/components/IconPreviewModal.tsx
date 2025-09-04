@@ -22,20 +22,73 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
 
   // Extraire les couleurs du SVG original
   const extractedColors = useMemo(() => {
-    const colorRegex = /(fill|stroke)="([^"]+)"/g;
     const foundColors = new Set<string>();
+    
+    // 1. Chercher dans les attributs fill et stroke
+    const attributeRegex = /(fill|stroke)="([^"]+)"/g;
     let match;
-
-    while ((match = colorRegex.exec(originalSvg)) !== null) {
+    while ((match = attributeRegex.exec(originalSvg)) !== null) {
       const color = match[2];
-      // Ignorer les valeurs comme "none", "currentColor", etc.
-      if (color && color !== 'none' && color !== 'currentColor' && color.startsWith('#')) {
+      if (isValidColor(color)) {
+        foundColors.add(color);
+      }
+    }
+    
+    // 2. Chercher dans les attributs style
+    const styleRegex = /style="[^"]*(?:fill|stroke):\s*([^;"\s]+)/g;
+    while ((match = styleRegex.exec(originalSvg)) !== null) {
+      const color = match[1];
+      if (isValidColor(color)) {
+        foundColors.add(color);
+      }
+    }
+    
+    // 3. Chercher dans les définitions de gradients et autres éléments
+    const stopRegex = /stop-color="([^"]+)"/g;
+    while ((match = stopRegex.exec(originalSvg)) !== null) {
+      const color = match[1];
+      if (isValidColor(color)) {
         foundColors.add(color);
       }
     }
 
     return Array.from(foundColors);
   }, [originalSvg]);
+
+  // Fonction pour valider si une couleur est modifiable
+  const isValidColor = (color: string): boolean => {
+    if (!color || color === 'none' || color === 'currentColor' || color === 'inherit') {
+      return false;
+    }
+    
+    // Couleurs hexadécimales
+    if (color.match(/^#[0-9a-fA-F]{3,8}$/)) {
+      return true;
+    }
+    
+    // Couleurs RGB/RGBA
+    if (color.match(/^rgba?\([^)]+\)$/)) {
+      return true;
+    }
+    
+    // Couleurs HSL/HSLA
+    if (color.match(/^hsla?\([^)]+\)$/)) {
+      return true;
+    }
+    
+    // Couleurs nommées courantes
+    const namedColors = [
+      'red', 'blue', 'green', 'yellow', 'orange', 'purple', 'pink', 'brown',
+      'black', 'white', 'gray', 'grey', 'darkgray', 'darkgrey', 'lightgray', 'lightgrey',
+      'darkblue', 'lightblue', 'darkgreen', 'lightgreen', 'darkred', 'lightred'
+    ];
+    
+    if (namedColors.includes(color.toLowerCase())) {
+      return true;
+    }
+    
+    return false;
+  };
 
   // Initialiser les couleurs lors de l'ouverture
   useEffect(() => {
@@ -54,8 +107,19 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
     let updated = originalSvg;
     Object.entries(colors).forEach(([original, newColor]) => {
       if (original !== newColor) {
-        const regex = new RegExp(`(fill|stroke)="${original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"`, 'g');
-        updated = updated.replace(regex, `$1="${newColor}"`);
+        const escapedOriginal = original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        
+        // Remplacer dans les attributs fill et stroke
+        const attributeRegex = new RegExp(`(fill|stroke)="${escapedOriginal}"`, 'g');
+        updated = updated.replace(attributeRegex, `$1="${newColor}"`);
+        
+        // Remplacer dans les attributs style
+        const styleRegex = new RegExp(`((?:fill|stroke):\\s*)${escapedOriginal}([;"])`, 'g');
+        updated = updated.replace(styleRegex, `$1${newColor}$2`);
+        
+        // Remplacer dans stop-color
+        const stopRegex = new RegExp(`(stop-color)="${escapedOriginal}"`, 'g');
+        updated = updated.replace(stopRegex, `$1="${newColor}"`);
       }
     });
     setModifiedSvg(updated);
