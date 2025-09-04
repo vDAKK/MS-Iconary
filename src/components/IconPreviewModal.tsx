@@ -222,19 +222,21 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
             </div>
 
             {/* Actions */}
-            <div className="flex gap-2">
-              <Button onClick={handleCopyImage} className="flex-1">
+            <div className="flex flex-col gap-2">
+              <Button onClick={handleCopyImage} className="w-full">
                 <Copy className="w-4 h-4 mr-2" />
                 Copier Image
               </Button>
-              <Button onClick={handleCopyCode} variant="outline" className="flex-1">
-                <Copy className="w-4 h-4 mr-2" />
-                Copier SVG
-              </Button>
-              <Button onClick={handleDownload} variant="outline" className="flex-1">
-                <Download className="w-4 h-4 mr-2" />
-                Télécharger
-              </Button>
+              <div className="grid grid-cols-2 gap-2">
+                <Button onClick={handleCopyCode} variant="outline">
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copier SVG
+                </Button>
+                <Button onClick={handleDownload} variant="outline">
+                  <Download className="w-4 h-4 mr-2" />
+                  Télécharger
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -249,32 +251,32 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
             </div>
             
             {extractedColors.length > 0 ? (
-              <div className="space-y-3">
+              <div className="space-y-4 max-h-60 overflow-y-auto pr-2">
                 {extractedColors.map((color, index) => (
                   <div key={color} className="flex items-center gap-3">
-                    <Label className="text-sm font-medium min-w-0 flex-1">
+                    <Label className="text-sm font-medium w-16 flex-shrink-0">
                       Couleur {index + 1}
                     </Label>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-1 min-w-0">
                       {/* Couleur originale */}
                       <div 
-                        className="w-8 h-8 rounded border border-border"
+                        className="w-8 h-8 rounded border border-border flex-shrink-0"
                         style={{ backgroundColor: color }}
                         title={`Original: ${color}`}
                       />
-                      <span className="text-xs text-muted-foreground">→</span>
+                      <span className="text-xs text-muted-foreground flex-shrink-0">→</span>
                       {/* Nouvelle couleur */}
                       <Input
                         type="color"
                         value={colors[color] || color}
                         onChange={(e) => handleColorChange(color, e.target.value)}
-                        className="w-12 h-8 p-0 border-border cursor-pointer"
+                        className="w-12 h-8 p-0 border-border cursor-pointer flex-shrink-0"
                       />
                       <Input
                         type="text"
                         value={colors[color] || color}
                         onChange={(e) => handleColorChange(color, e.target.value)}
-                        className="w-20 text-xs"
+                        className="w-20 text-xs flex-shrink-0"
                         placeholder="#000000"
                       />
                     </div>

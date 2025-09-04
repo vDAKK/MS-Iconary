@@ -268,12 +268,7 @@ export const IconCard = ({
         transition-opacity duration-slow
       `} />
 
-    {/* Indicateur d'action principale */}
-    <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-60 transition-opacity duration-smooth">
-      <div className="text-xs text-muted-foreground/70 bg-background/80 px-2 py-1 rounded border border-border/30 backdrop-blur-sm">
-        Clic = Copier • Double-clic = Éditer
-      </div>
-    </div>
+    {/* Indicateur d'action principale - retiré */}
 
     <DeleteConfirmModal
       isOpen={showDeleteModal}
