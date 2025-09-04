@@ -171,7 +171,8 @@ export const IconCard = ({
     e.stopPropagation();
     onToggleFavorite?.(name);
   };
-  return <div className={`
+  return (
+    <div className={`
         relative group cursor-pointer rounded-xl p-6 
         glass border border-border/50
         hover:border-primary/30 hover:shadow-glow
@@ -179,133 +180,142 @@ export const IconCard = ({
         hover:-translate-y-1 hover:scale-[1.02]
         animate-fade-in
         ${className}
-      `} style={style} onMouseEnter={() => {
-      setIsHovered(true);
-      setShowActions(true);
-    }} onMouseLeave={() => {
-      setIsHovered(false);
-      setTimeout(() => setShowActions(false), 200);
-    }}>
-    
-    {/* Zone cliquable pour la copie d'image (sans les boutons) */}
-    <div className="absolute inset-0 z-0" onClick={handleCardClick} />
-    {/* Effet de gradient au hover */}
-    <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 via-primary-light/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-smooth" />
+      `} 
+      style={style} 
+      onMouseEnter={() => {
+        setIsHovered(true);
+        setShowActions(true);
+      }} 
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setTimeout(() => setShowActions(false), 200);
+      }}
+    >
+      
+      {/* Zone cliquable pour la copie d'image (sans les boutons) */}
+      <div className="absolute inset-0 z-0" onClick={handleCardClick} />
+      
+      {/* Effet de gradient au hover */}
+      <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 via-primary-light/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-smooth" />
 
-    {/* Icône SVG */}
-    <div className="relative flex items-center justify-center h-12 w-12 mx-auto mb-4">
-      <div 
-        className="text-muted-foreground group-hover:text-primary transition-colors duration-smooth transform group-hover:scale-110 w-8 h-8 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-8 [&>svg]:max-h-8" 
-        dangerouslySetInnerHTML={{ __html: cleanSvg(svg) }} 
+      {/* Bouton favoris en haut à gauche (toujours visible si favori) */}
+      <div className={`
+          absolute top-2 left-2 z-10
+          transition-all duration-smooth transform
+          ${isFavorite ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
+          ${isHovered ? 'translate-y-0' : 'translate-y-2'}
+        `}>
+        <button onClick={handleFavoriteToggle} className={`
+              p-1.5 rounded-lg glass backdrop-blur-sm
+              border border-border/30 hover:border-red-400/50
+              transition-all duration-smooth
+              ${isFavorite ? 'bg-red-100/20 border-red-400' : 'hover:bg-red-50/10'}
+            `} title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}>
+          <Heart className={`w-3.5 h-3.5 transition-all duration-smooth ${
+            isFavorite ? 'text-red-500 fill-red-500 scale-110' : 'text-muted-foreground group-hover:text-red-400'
+          }`} />
+        </button>
+      </div>
+
+      {/* Actions rapides en haut à droite */}
+      <div className={`
+          absolute top-2 right-2 flex flex-col gap-1 z-10
+          opacity-0 group-hover:opacity-100 
+          transition-all duration-smooth transform
+          ${isHovered ? 'translate-y-0' : 'translate-y-2'}
+        `}>
+        {/* Copier image (action principale) */}
+        <button onClick={handleCopyImage} className={`
+              p-1.5 rounded-lg glass backdrop-blur-sm
+              border border-border/30 hover:border-primary/50
+              transition-all duration-smooth
+              ${copied ? 'bg-accent/20 border-accent scale-110' : 'hover:bg-primary/10'}
+            `} title="Copier comme image">
+          {copied ? <Check className="w-3.5 h-3.5 text-accent-foreground animate-scale-in" /> : <Copy className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary" />}
+        </button>
+
+        {/* Actions secondaires */}
+        <button onClick={handleCopyCode} className="
+                  p-1.5 rounded-lg glass backdrop-blur-sm
+                  border border-border/30 hover:border-primary/50
+                  hover:bg-primary/10 transition-all duration-smooth
+                  animate-scale-in
+                " title="Copier le code SVG">
+          <Code className="w-3.5 h-3.5 text-muted-foreground hover:text-primary" />
+        </button>
+
+        <button onClick={handleDownload} className="
+                  p-1.5 rounded-lg glass backdrop-blur-sm
+                  border border-border/30 hover:border-primary/50
+                  hover:bg-primary/10 transition-all duration-smooth
+                  animate-scale-in
+                " title="Télécharger SVG">
+          <Download className="w-3.5 h-3.5 text-muted-foreground hover:text-primary" />
+        </button>
+
+        {/* Bouton d'édition */}
+        <button onClick={handleEditClick} className="
+                  p-1.5 rounded-lg glass backdrop-blur-sm
+                  border border-border/30 hover:border-accent/50
+                  hover:bg-accent/10 transition-all duration-smooth
+                  animate-scale-in
+                " title="Personnaliser les couleurs">
+          <Palette className="w-3.5 h-3.5 text-muted-foreground hover:text-accent-foreground" />
+        </button>
+
+        {/* Bouton de suppression en mode admin */}
+        {isAdminMode && (
+          <button 
+            onClick={handleDelete}
+            className="
+              p-1.5 rounded-lg glass backdrop-blur-sm
+              border border-destructive/30 hover:border-destructive/70
+              hover:bg-destructive/20 transition-all duration-smooth
+              animate-scale-in
+            " 
+            title="Supprimer l'icône"
+          >
+            <Trash2 className="w-3.5 h-3.5 text-destructive hover:text-destructive-foreground" />
+          </button>
+        )}
+      </div>
+
+      {/* Icône SVG */}
+      <div className="relative flex items-center justify-center h-12 w-12 mx-auto mb-4">
+        <div 
+          className="text-muted-foreground group-hover:text-primary transition-colors duration-smooth transform group-hover:scale-110 w-8 h-8 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-8 [&>svg]:max-h-8" 
+          dangerouslySetInnerHTML={{ __html: cleanSvg(svg) }} 
+        />
+      </div>
+
+      {/* Nom de l'icône */}
+      <p className="relative text-sm text-center text-muted-foreground group-hover:text-foreground transition-colors duration-smooth font-medium">
+        {name}
+      </p>
+
+      {/* Effet shimmer subtil */}
+      <div className={`
+          absolute inset-0 rounded-xl
+          bg-gradient-to-r from-transparent via-primary/5 to-transparent
+          opacity-0 group-hover:opacity-100
+          animate-shimmer bg-[length:200%_100%]
+          transition-opacity duration-slow
+        `} />
+
+      <DeleteConfirmModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={confirmDelete}
+        onHide={confirmHide}
+        iconName={name}
+      />
+
+      <IconPreviewModal
+        isOpen={showPreviewModal}
+        onClose={() => setShowPreviewModal(false)}
+        name={name}
+        originalSvg={cleanSvg(svg)}
       />
     </div>
-
-    {/* Nom de l'icône */}
-    <p className="relative text-sm text-center text-muted-foreground group-hover:text-foreground transition-colors duration-smooth font-medium">
-      {name}
-    </p>
-
-    {/* Actions rapides */}
-    <div className={`
-        absolute top-2 right-2 flex flex-col gap-1 z-10
-        opacity-0 group-hover:opacity-100 
-        transition-all duration-smooth transform
-        ${isHovered ? 'translate-y-0' : 'translate-y-2'}
-      `}>
-
-      {/* Bouton favoris */}
-      <button onClick={handleFavoriteToggle} className={`
-            p-1.5 rounded-lg glass backdrop-blur-sm
-            border border-border/30 hover:border-red-400/50
-            transition-all duration-smooth
-            ${isFavorite ? 'bg-red-100/20 border-red-400' : 'hover:bg-red-50/10'}
-          `} title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}>
-        <Heart className={`w-3.5 h-3.5 transition-all duration-smooth ${
-          isFavorite ? 'text-red-500 fill-red-500 scale-110' : 'text-muted-foreground group-hover:text-red-400'
-        }`} />
-      </button>
-
-      {/* Copier image (action principale) */}
-      <button onClick={handleCopyImage} className={`
-            p-1.5 rounded-lg glass backdrop-blur-sm
-            border border-border/30 hover:border-primary/50
-            transition-all duration-smooth
-            ${copied ? 'bg-accent/20 border-accent scale-110' : 'hover:bg-primary/10'}
-          `} title="Copier comme image">
-        {copied ? <Check className="w-3.5 h-3.5 text-accent-foreground animate-scale-in" /> : <Copy className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary" />}
-      </button>
-
-      {/* Actions secondaires */}
-      <button onClick={handleCopyCode} className="
-                p-1.5 rounded-lg glass backdrop-blur-sm
-                border border-border/30 hover:border-primary/50
-                hover:bg-primary/10 transition-all duration-smooth
-                animate-scale-in
-              " title="Copier le code SVG">
-        <Code className="w-3.5 h-3.5 text-muted-foreground hover:text-primary" />
-      </button>
-
-      <button onClick={handleDownload} className="
-                p-1.5 rounded-lg glass backdrop-blur-sm
-                border border-border/30 hover:border-primary/50
-                hover:bg-primary/10 transition-all duration-smooth
-                animate-scale-in
-              " title="Télécharger SVG">
-        <Download className="w-3.5 h-3.5 text-muted-foreground hover:text-primary" />
-      </button>
-
-      {/* Bouton d'édition */}
-      <button onClick={handleEditClick} className="
-                p-1.5 rounded-lg glass backdrop-blur-sm
-                border border-border/30 hover:border-accent/50
-                hover:bg-accent/10 transition-all duration-smooth
-                animate-scale-in
-              " title="Personnaliser les couleurs">
-        <Palette className="w-3.5 h-3.5 text-muted-foreground hover:text-accent-foreground" />
-      </button>
-
-      {/* Bouton de suppression en mode admin */}
-      {isAdminMode && (
-        <button 
-          onClick={handleDelete}
-          className="
-            p-1.5 rounded-lg glass backdrop-blur-sm
-            border border-destructive/30 hover:border-destructive/70
-            hover:bg-destructive/20 transition-all duration-smooth
-            animate-scale-in
-          " 
-          title="Supprimer l'icône"
-        >
-          <Trash2 className="w-3.5 h-3.5 text-destructive hover:text-destructive-foreground" />
-        </button>
-      )}
-    </div>
-
-
-    {/* Effet shimmer subtil */}
-    <div className={`
-        absolute inset-0 rounded-xl
-        bg-gradient-to-r from-transparent via-primary/5 to-transparent
-        opacity-0 group-hover:opacity-100
-        animate-shimmer bg-[length:200%_100%]
-        transition-opacity duration-slow
-      `} />
-
-    {/* Indicateur d'action principale - retiré */}
-
-    <DeleteConfirmModal
-      isOpen={showDeleteModal}
-      onClose={() => setShowDeleteModal(false)}
-      onConfirm={confirmDelete}
-      onHide={confirmHide}
-      iconName={name}
-    />
-
-    <IconPreviewModal
-      isOpen={showPreviewModal}
-      onClose={() => setShowPreviewModal(false)}
-      name={name}
-      originalSvg={cleanSvg(svg)}
-    />
-  </div>;
+  );
 };
