@@ -186,23 +186,26 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
     setColors(resetColors);
   };
 
-  // Fonction pour ajuster la taille du SVG - Approche simplifiée avec CSS
+  // Fonction pour ajuster la taille du SVG - Force les dimensions dans le markup SVG
   const getSizedSvg = (svgString: string, size: number) => {
-    // Pour la copie/téléchargement, on force les dimensions dans le SVG
     let sizedSvg = svgString;
     
-    // Supprimer les attributs width/height existants
+    // 1. Supprimer tous les attributs width et height existants
     sizedSvg = sizedSvg.replace(/\s*width="[^"]*"/g, '');
     sizedSvg = sizedSvg.replace(/\s*height="[^"]*"/g, '');
     
-    // Ajouter les nouvelles dimensions
-    sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 width="${size}" height="${size}">`);
+    // 2. Forcer les nouvelles dimensions directement dans la balise SVG
+    sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 width="${size}" height="${size}" style="width: ${size}px; height: ${size}px;">`);
     
-    // S'assurer qu'il y a un viewBox pour le redimensionnement correct
+    // 3. Ajouter un viewBox si il n'existe pas pour garantir le scaling
     if (!sizedSvg.includes('viewBox=')) {
-      // Ajouter un viewBox par défaut si il n'y en a pas
       sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 viewBox="0 0 24 24">`);
     }
+    
+    // 4. S'assurer qu'aucun style inline ne limite la taille
+    sizedSvg = sizedSvg.replace(/style="[^"]*width:[^;"]*;?[^"]*"/g, (match) => {
+      return match.replace(/width:[^;"]*;?/, '').replace(/height:[^;"]*;?/, '');
+    });
     
     return sizedSvg;
   };
@@ -293,12 +296,8 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
                   height: `${iconSize}px`,
                   color: 'hsl(var(--foreground))'
                 }}
-              >
-                <div 
-                  className="w-full h-full [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-full [&>svg]:max-h-full"
-                  dangerouslySetInnerHTML={{ __html: modifiedSvg }}
-                />
-              </div>
+                dangerouslySetInnerHTML={{ __html: getSizedSvg(modifiedSvg, iconSize) }}
+              />
             </div>
             
             {/* Vue sur différents fonds */}
