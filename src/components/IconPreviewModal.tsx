@@ -100,7 +100,7 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
       setColors(initialColors);
       setModifiedSvg(originalSvg);
     }
-  }, [isOpen, originalSvg, extractedColors]);
+  }, [isOpen, originalSvg]); // Retirer extractedColors des dépendances
 
   // Mettre à jour le SVG quand les couleurs changent
   useEffect(() => {
