@@ -91,18 +91,46 @@ export const IconCard = ({
       return hasProblematicColors || hasNoColors;
     };
 
-    if (isMonochromeIcon(cleaned)) {
-      // Forcer currentColor pour toutes les couleurs problématiques
-      cleaned = cleaned
-        // Remplacer les fills problématiques
-        .replace(/fill="(#000000|#000|#333333|#333|#666666|#666|#999999|#999|#212121|#424242|black|gray|grey|#ffffff|#fff|white|#f0f0f0|#e0e0e0|#d0d0d0)"/g, 'fill="currentColor"')
-        // Remplacer les strokes problématiques  
-        .replace(/stroke="(#000000|#000|#333333|#333|#666666|#666|#999999|#999|#212121|#424242|black|gray|grey|#ffffff|#fff|white|#f0f0f0|#e0e0e0|#d0d0d0)"/g, 'stroke="currentColor"')
-        // Ajouter fill="currentColor" si aucun fill n'est défini sur les paths
-        .replace(/<path(?![^>]*fill=)([^>]*)>/g, '<path$1 fill="currentColor">')
-        // Ajouter currentColor aux SVG sans couleur définie
-        .replace(/<svg(?![^>]*fill=)([^>]*>)/g, '<svg$1').replace(/<svg([^>]*)>/, '<svg$1 fill="currentColor">');
-    }
+    // SOLUTION SIMPLIFIÉE : Forcer currentColor pour toutes les icônes avec des couleurs problématiques
+    const forceCurrentColor = (svg: string): string => {
+      let processed = svg;
+      
+      // Liste exhaustive des couleurs problématiques
+      const problematicColors = [
+        '#000000', '#000', '#333333', '#333', '#666666', '#666', '#999999', '#999', 
+        '#212121', '#424242', 'black', 'gray', 'grey',
+        '#ffffff', '#fff', 'white', '#f0f0f0', '#e0e0e0', '#d0d0d0', '#cccccc', '#ccc'
+      ];
+      
+      // Debugging: log le SVG original et le nom
+      console.log(`Processing icon: ${name}`, svg.substring(0, 200));
+      
+      // Remplacer TOUS les fills et strokes problématiques par currentColor
+      problematicColors.forEach(color => {
+        const fillRegex = new RegExp(`fill="${color}"`, 'gi');
+        const strokeRegex = new RegExp(`stroke="${color}"`, 'gi');
+        processed = processed.replace(fillRegex, 'fill="currentColor"');
+        processed = processed.replace(strokeRegex, 'stroke="currentColor"');
+      });
+      
+      // Cas spéciaux pour les paths sans couleur définie
+      if (!processed.includes('fill=') && processed.includes('<path')) {
+        processed = processed.replace(/<path([^>]*)>/g, '<path$1 fill="currentColor">');
+        console.log(`Added fill to paths for: ${name}`);
+      }
+      
+      // Ajouter currentColor au SVG racine si pas de couleur définie
+      if (!processed.includes('fill=') && !processed.includes('stroke=')) {
+        processed = processed.replace(/<svg([^>]*)>/, '<svg$1 fill="currentColor">');
+        console.log(`Added fill to SVG root for: ${name}`);
+      }
+      
+      console.log(`Processed result for ${name}:`, processed.substring(0, 200));
+      return processed;
+    };
+
+    // Appliquer le traitement à TOUTES les icônes (pas seulement monochromes)
+    cleaned = forceCurrentColor(cleaned);
     
     return cleaned;
   };
