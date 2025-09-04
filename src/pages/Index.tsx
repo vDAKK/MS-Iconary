@@ -10,8 +10,7 @@ import { ScrollToTop } from '@/components/ScrollToTop';
 import { iconsData, deleteIcon } from '@/data/icons';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
-import { SemanticSearchService } from '@/utils/SemanticSearch';
-import { Sparkles, Copy, Download, Search, Palette, Shield, Loader2, Brain } from 'lucide-react';
+import { Sparkles, Copy, Download, Search, Loader2, Shield } from 'lucide-react';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -30,45 +29,6 @@ const Index = () => {
     sortOrder: 'asc'
   });
   
-  // Recherche sémantique
-  const [isSemanticMode, setIsSemanticMode] = useState(false);
-  const [isSemanticReady, setIsSemanticReady] = useState(false);
-  const [semanticResults, setSemanticResults] = useState<string[]>([]);
-  const [isSemanticLoading, setIsSemanticLoading] = useState(false);
-
-  // Initialisation de la recherche sémantique
-  useEffect(() => {
-    const initSemanticSearch = async () => {
-      try {
-        console.log('🚀 Starting semantic search initialization...');
-        setIsSemanticLoading(true);
-        
-        console.log('📚 Initializing SemanticSearchService...');
-        await SemanticSearchService.initialize();
-        console.log('✅ SemanticSearchService initialized');
-        
-        console.log('🧠 Generating embeddings for popular icons (limited set)...');
-        // Ne générer que les embeddings pour les 150 premières icônes au démarrage
-        await SemanticSearchService.generateIconEmbeddings(iconsData, 150);
-        console.log('✅ Initial embeddings generated');
-        
-        setIsSemanticReady(true);
-        console.log('🎉 Semantic search ready! (Progressive loading enabled)');
-      } catch (error) {
-        console.error('❌ Failed to initialize semantic search:', error);
-        setIsSemanticReady(false);
-      } finally {
-        console.log('🔄 Setting isSemanticLoading to false');
-        setIsSemanticLoading(false);
-      }
-    };
-
-    // Initialiser en arrière-plan après un court délai
-    setTimeout(() => {
-      console.log('⏰ Starting semantic search initialization (delayed)');
-      initSemanticSearch();
-    }, 2000); // Délai plus long pour laisser l'UI se charger
-  }, []);
 
   // Gestion des raccourcis clavier
   useEffect(() => {
@@ -94,69 +54,54 @@ const Index = () => {
   const processedIcons = useMemo(() => {
     let result = iconsData;
     
-    // Si mode sémantique et résultats disponibles
-    if (isSemanticMode && semanticResults.length > 0) {
-      // Filtrer par résultats sémantiques
-      result = result.filter(icon => semanticResults.includes(icon.name));
-      
-      // Trier par ordre de pertinence sémantique
-      result = result.sort((a, b) => {
-        const indexA = semanticResults.indexOf(a.name);
-        const indexB = semanticResults.indexOf(b.name);
-        return indexA - indexB;
+    // Filtre par recherche textuelle
+    const query = searchQuery.toLowerCase().trim();
+    if (query) {
+      result = result.filter(icon => {
+        const nameMatch = icon.name.toLowerCase().includes(query);
+        const categoryMatch = icon.category?.toLowerCase().includes(query);
+        const keywordsMatch = icon.keywords?.some(keyword => 
+          keyword.toLowerCase().includes(query)
+        );
+        
+        return nameMatch || categoryMatch || keywordsMatch;
       });
-    } else {
-      // Filtre par recherche textuelle normale
-      const query = searchQuery.toLowerCase().trim();
-      if (query) {
-        result = result.filter(icon => {
-          const nameMatch = icon.name.toLowerCase().includes(query);
-          const categoryMatch = icon.category?.toLowerCase().includes(query);
-          const keywordsMatch = icon.keywords?.some(keyword => 
-            keyword.toLowerCase().includes(query)
-          );
-          
-          return nameMatch || categoryMatch || keywordsMatch;
-        });
-      }
     }
     
-    // Filtre par favoris (s'applique toujours)
+    // Filtre par favoris
     if (filters.showFavoritesOnly) {
       result = result.filter(icon => isFavorite(icon.name));
     }
     
-    // Filtre par catégories (s'applique toujours)
+    // Filtre par catégories
     if (filters.categories.length > 0) {
       result = result.filter(icon => 
         icon.category && filters.categories.includes(icon.category)
       );
     }
     
-    // Tri (sauf en mode sémantique où l'ordre de pertinence prime)
-    if (!isSemanticMode || semanticResults.length === 0) {
-      result.sort((a, b) => {
-        let comparison = 0;
-        
-        switch (filters.sortBy) {
-          case 'name':
-            comparison = a.name.localeCompare(b.name);
-            break;
-          case 'category':
-            comparison = (a.category || '').localeCompare(b.category || '');
-            break;
-          case 'recent':
-            // Simuler un tri par récent basé sur l'index
-            comparison = iconsData.indexOf(b) - iconsData.indexOf(a);
-            break;
-        }
-        
-        return filters.sortOrder === 'desc' ? -comparison : comparison;
-      });
-    }
+    // Tri
+    result.sort((a, b) => {
+      let comparison = 0;
+      
+      switch (filters.sortBy) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'category':
+          comparison = (a.category || '').localeCompare(b.category || '');
+          break;
+        case 'recent':
+          // Simuler un tri par récent basé sur l'index
+          comparison = iconsData.indexOf(b) - iconsData.indexOf(a);
+          break;
+      }
+      
+      return filters.sortOrder === 'desc' ? -comparison : comparison;
+    });
     
     return result;
-  }, [searchQuery, forceUpdate, filters, isFavorite, isSemanticMode, semanticResults]);
+  }, [searchQuery, forceUpdate, filters, isFavorite]);
   
   // Catégories disponibles pour les filtres
   const availableCategories = useMemo(() => {
@@ -199,30 +144,6 @@ const Index = () => {
   const handleDeleteIcon = (filePath: string) => {
     deleteIcon(filePath);
     setForceUpdate(prev => prev + 1); // Force le re-render
-  };
-
-  // Gestion de la recherche sémantique
-  const handleSemanticSearch = async (query: string) => {
-    try {
-      // Passer la liste complète des icônes pour permettre la génération à la demande
-      const results = await SemanticSearchService.semanticSearch(query, iconsData, 50);
-      const iconNames = results.map(r => r.name);
-      setSemanticResults(iconNames);
-      
-      // Afficher les scores dans la console pour debug
-      console.log('Semantic search results:', results.slice(0, 10)); // Top 10 seulement
-    } catch (error) {
-      console.error('Semantic search failed:', error);
-      setSemanticResults([]);
-    }
-  };
-
-  const handleToggleSemanticMode = () => {
-    setIsSemanticMode(!isSemanticMode);
-    if (isSemanticMode) {
-      // Retour au mode normal : vider les résultats sémantiques
-      setSemanticResults([]);
-    }
   };
 
   return (
@@ -276,10 +197,6 @@ const Index = () => {
                   onChange={setSearchQuery}
                   placeholder="Rechercher une icône..."
                   className="w-96"
-                  onSemanticSearch={handleSemanticSearch}
-                  isSemanticMode={isSemanticMode}
-                  onToggleSemanticMode={handleToggleSemanticMode}
-                  isSemanticReady={isSemanticReady}
                 />
               </div>
 
@@ -288,28 +205,12 @@ const Index = () => {
                 <p className="text-muted-foreground text-sm">
                   {visibleCount} icône{visibleCount > 1 ? 's' : ''} affichée{visibleCount > 1 ? 's' : ''} 
                   {processedIcons.length !== visibleCount && ` sur ${processedIcons.length} total${processedIcons.length > 1 ? 'es' : ''}`}
-                  {isSemanticMode && semanticResults.length > 0 && (
-                    <span className="ml-2 text-primary">
-                      • Résultats IA triés par pertinence
-                    </span>
-                  )}
                   {favoritesCount > 0 && (
                     <span className="ml-2 text-red-500">
                       • {favoritesCount} favori{favoritesCount > 1 ? 's' : ''}
                     </span>
                   )}
                 </p>
-                {isSemanticLoading && (
-                  <div className="flex items-center justify-center mt-2 text-xs text-muted-foreground">
-                    <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                    Initialisation rapide de la recherche sémantique...
-                  </div>
-                )}
-                {isSemanticReady && !isSemanticLoading && (
-                  <div className="flex items-center justify-center mt-2 text-xs text-primary/60">
-                    ✨ Recherche sémantique prête (chargement progressif)
-                  </div>
-                )}
               </div>
             </div>
           </div>
