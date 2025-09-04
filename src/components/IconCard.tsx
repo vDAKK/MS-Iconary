@@ -96,18 +96,8 @@ export const IconCard = ({
     const hasVividColors = /#[0-9a-fA-F]{6}/.test(cleaned) && 
       !/#(000000|ffffff|333333|666666|999999|cccccc|f0f0f0|e0e0e0|d0d0d0)$/i.test(cleaned);
     
-    // Debug pour API Management Services
-    if (name.includes('API Management')) {
-      console.log(`API Management - Original SVG:`, svg.substring(0, 500));
-      console.log(`API Management - Cleaned SVG:`, cleaned.substring(0, 500));
-      console.log(`API Management - Has vivid colors:`, hasVividColors);
-      console.log(`API Management - Contains c69aeb:`, cleaned.includes('#c69aeb'));
-      console.log(`API Management - Contains 6f4bb2:`, cleaned.includes('#6f4bb2'));
-    }
-    
     // Préserver les icônes colorées telles quelles
     if (hasVividColors) {
-      console.log(`Preserving colorful icon: ${name}`);
       return cleaned;
     }
     
@@ -139,10 +129,10 @@ export const IconCard = ({
       if (!processed.includes('fill=') && !processed.includes('stroke=')) {
         processed = processed.replace(/<svg([^>]*)>/, '<svg$1 fill="currentColor">');
       }
-      
+
       return processed;
     };
-    
+
     if (isMonochromeIcon(cleaned)) {
       cleaned = forceCurrentColor(cleaned);
     }
@@ -372,15 +362,16 @@ export const IconCard = ({
           group-hover:from-primary/15 group-hover:to-primary/8
           group-hover:border-primary/30 group-hover:shadow-md group-hover:scale-105
           shadow-sm
+          overflow-visible
         ">
           <div 
             className="
               icon-container
               text-foreground group-hover:text-primary
               transition-colors duration-smooth 
-              w-6 h-6 flex items-center justify-center 
-              [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-6 [&>svg]:max-h-6
-              [&>svg]:drop-shadow-sm
+              w-8 h-8 flex items-center justify-center 
+              [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-none [&>svg]:max-h-none
+              [&>svg]:drop-shadow-sm [&>svg]:overflow-visible
             " 
             style={{ color: 'hsl(var(--foreground))' }}
             dangerouslySetInnerHTML={{ __html: cleanSvg(svg) }} 
