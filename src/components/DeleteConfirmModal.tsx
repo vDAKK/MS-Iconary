@@ -5,29 +5,38 @@ interface DeleteConfirmModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  onHide: () => void;
   iconName: string;
 }
 
-export const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, iconName }: DeleteConfirmModalProps) => {
+export const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, onHide, iconName }: DeleteConfirmModalProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Supprimer l'icône</DialogTitle>
+          <DialogTitle>Que voulez-vous faire avec cette icône ?</DialogTitle>
           <DialogDescription>
-            Êtes-vous sûr de vouloir supprimer l'icône "<strong>{iconName}</strong>" ?
+            Icône sélectionnée : "<strong>{iconName}</strong>"
             <br />
-            <span className="text-muted-foreground text-xs mt-2 block">
-              Note: Cette suppression n'est que temporaire (côté client uniquement)
-            </span>
+            <br />
+            <strong>Masquer</strong> : L'icône ne sera plus visible mais restera dans GitHub<br />
+            <small className="text-muted-foreground">
+              → Déplacez manuellement le fichier dans un dossier "hidden" pour un masquage permanent
+            </small>
+            <br />
+            <br />
+            <strong>Supprimer</strong> : Suppression temporaire (côté client uniquement)
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex gap-2">
           <Button variant="outline" onClick={onClose}>
             Annuler
           </Button>
+          <Button variant="secondary" onClick={onHide}>
+            Masquer
+          </Button>
           <Button variant="destructive" onClick={onConfirm}>
-            Supprimer
+            Supprimer (temp)
           </Button>
         </DialogFooter>
       </DialogContent>

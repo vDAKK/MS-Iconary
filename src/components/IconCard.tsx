@@ -109,6 +109,18 @@ export const IconCard = ({
     setShowDeleteModal(false);
   };
 
+  const confirmHide = () => {
+    if (onDelete) {
+      onDelete(name);
+      toast({
+        title: "Icône masquée", 
+        description: `L'icône "${name}" a été masquée. Pour un masquage permanent, déplacez le fichier dans un dossier "hidden".`,
+        duration: 6000,
+      });
+    }
+    setShowDeleteModal(false);
+  };
+
   const handleCardClick = async (e: React.MouseEvent) => {
     // Ne pas déclencher si on clique sur un bouton
     if ((e.target as HTMLElement).closest('button')) {
@@ -226,6 +238,7 @@ export const IconCard = ({
       isOpen={showDeleteModal}
       onClose={() => setShowDeleteModal(false)}
       onConfirm={confirmDelete}
+      onHide={confirmHide}
       iconName={name}
     />
   </div>;

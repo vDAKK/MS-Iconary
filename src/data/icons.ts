@@ -5,12 +5,17 @@ export interface IconData {
   keywords?: string[];
 }
 
-// Dynamically import all SVG files from src/icons
+// Dynamically import all SVG files from src/icons, excluding hidden folder
 const iconModules = import.meta.glob('/src/icons/**/*.svg', { 
   query: '?raw', 
   import: 'default',
   eager: true 
 });
+
+// Filter out icons in hidden folders
+const filteredIconModules = Object.fromEntries(
+  Object.entries(iconModules).filter(([path]) => !path.includes('/hidden/'))
+);
 
 function cleanIconName(rawName: string): string {
   let cleaned = rawName;
@@ -83,7 +88,7 @@ function generateKeywords(name: string, category: string): string[] {
 }
 
 // Convert imported SVG modules to IconData format
-let iconsDataArray: IconData[] = Object.entries(iconModules).map(([path, content]) => {
+let iconsDataArray: IconData[] = Object.entries(filteredIconModules).map(([path, content]) => {
   const name = extractIconName(path);
   const category = extractCategory(path);
   
@@ -95,7 +100,14 @@ let iconsDataArray: IconData[] = Object.entries(iconModules).map(([path, content
   };
 }).sort((a, b) => a.name.localeCompare(b.name));
 
-// Fonction pour supprimer une icône
+// Fonction pour "masquer" une icône en la déplaçant vers le dossier hidden
+export const hideIcon = (iconName: string): void => {
+  console.log(`Pour masquer "${iconName}", déplacez le fichier SVG dans un dossier "hidden" dans src/icons/`);
+  // Note: En environnement GitHub Pages, on ne peut que supprimer côté client
+  iconsDataArray = iconsDataArray.filter(icon => icon.name !== iconName);
+};
+
+// Fonction pour supprimer une icône (temporaire côté client)
 export const deleteIcon = (iconName: string): void => {
   iconsDataArray = iconsDataArray.filter(icon => icon.name !== iconName);
 };
