@@ -1,6 +1,8 @@
 import { useClipboard } from '@/hooks/useClipboard';
 import { Check, Copy, Download, Code, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { DeleteConfirmModal } from './DeleteConfirmModal';
+import { useToast } from '@/hooks/use-toast';
 
 interface IconCardProps {
   name: string;
@@ -26,6 +28,8 @@ export const IconCard = ({
   } = useClipboard();
   const [isHovered, setIsHovered] = useState(false);
   const [showActions, setShowActions] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const { toast } = useToast();
 
   // Nettoyer le SVG en supprimant les déclarations XML, DOCTYPE, entités et commentaires
   const cleanSvg = (svgContent: string): string => {
@@ -91,9 +95,18 @@ export const IconCard = ({
   const handleDelete = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (onDelete && confirm(`Êtes-vous sûr de vouloir supprimer l'icône "${name}" ?`)) {
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    if (onDelete) {
       onDelete(name);
+      toast({
+        title: "Icône supprimée",
+        description: `L'icône "${name}" a été supprimée temporairement.`,
+      });
     }
+    setShowDeleteModal(false);
   };
 
   const handleCardClick = async (e: React.MouseEvent) => {
@@ -208,5 +221,12 @@ export const IconCard = ({
     {/* Indicateur d'action principale */}
     <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-60 transition-opacity duration-smooth">
     </div>
+
+    <DeleteConfirmModal
+      isOpen={showDeleteModal}
+      onClose={() => setShowDeleteModal(false)}
+      onConfirm={confirmDelete}
+      iconName={name}
+    />
   </div>;
 };
