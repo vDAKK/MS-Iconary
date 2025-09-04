@@ -1,15 +1,20 @@
 import { useClipboard } from '@/hooks/useClipboard';
-import { Check, Copy, Download, Code } from 'lucide-react';
+import { Check, Copy, Download, Code, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+
 interface IconCardProps {
   name: string;
   svg: string;
+  isAdminMode?: boolean;
+  onDelete?: (name: string) => void;
   className?: string;
   style?: React.CSSProperties;
 }
 export const IconCard = ({
   name,
   svg,
+  isAdminMode = false,
+  onDelete,
   className = '',
   style
 }: IconCardProps) => {
@@ -80,6 +85,14 @@ export const IconCard = ({
       downloadSvg(cleanSvg(svg), name);
     } catch (error) {
       console.error('Error downloading:', error);
+    }
+  };
+
+  const handleDelete = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (onDelete && confirm(`Êtes-vous sûr de vouloir supprimer l'icône "${name}" ?`)) {
+      onDelete(name);
     }
   };
 
@@ -164,6 +177,22 @@ export const IconCard = ({
               " title="Télécharger SVG">
         <Download className="w-3.5 h-3.5 text-muted-foreground hover:text-primary" />
       </button>
+
+      {/* Bouton de suppression en mode admin */}
+      {isAdminMode && (
+        <button 
+          onClick={handleDelete}
+          className="
+            p-1.5 rounded-lg glass backdrop-blur-sm
+            border border-destructive/30 hover:border-destructive/70
+            hover:bg-destructive/20 transition-all duration-smooth
+            animate-scale-in
+          " 
+          title="Supprimer l'icône"
+        >
+          <Trash2 className="w-3.5 h-3.5 text-destructive hover:text-destructive-foreground" />
+        </button>
+      )}
     </div>
 
 
