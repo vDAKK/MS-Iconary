@@ -17,6 +17,7 @@ interface IconPreviewModalProps {
 export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPreviewModalProps) => {
   const [modifiedSvg, setModifiedSvg] = useState(originalSvg);
   const [colors, setColors] = useState<{ [key: string]: string }>({});
+  const [svgKey, setSvgKey] = useState(0); // Clé pour forcer le re-rendu
   const { copyImageToClipboard, copyTextToClipboard, downloadSvg } = useClipboard();
   const { toast } = useToast();
 
@@ -146,6 +147,7 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
       }
     });
     setModifiedSvg(updated);
+    setSvgKey(prev => prev + 1); // Forcer le re-rendu
   }, [colors, originalSvg]);
 
   const handleColorChange = (originalColor: string, newColor: string) => {
@@ -217,6 +219,7 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
             {/* Vue normale */}
             <div className="p-8 border border-border rounded-lg bg-background flex items-center justify-center">
               <div 
+                key={`main-${svgKey}`}
                 className="w-24 h-24 [&>svg]:w-full [&>svg]:h-full"
                 dangerouslySetInnerHTML={{ __html: modifiedSvg }}
               />
@@ -226,18 +229,21 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
             <div className="grid grid-cols-3 gap-2">
               <div className="p-4 bg-white border rounded-lg flex items-center justify-center">
                 <div 
+                  key={`white-${svgKey}`}
                   className="w-8 h-8 [&>svg]:w-full [&>svg]:h-full"
                   dangerouslySetInnerHTML={{ __html: modifiedSvg }}
                 />
               </div>
               <div className="p-4 bg-gray-100 border rounded-lg flex items-center justify-center">
                 <div 
+                  key={`gray-${svgKey}`}
                   className="w-8 h-8 [&>svg]:w-full [&>svg]:h-full"
                   dangerouslySetInnerHTML={{ __html: modifiedSvg }}
                 />
               </div>
               <div className="p-4 bg-gray-900 border rounded-lg flex items-center justify-center">
                 <div 
+                  key={`dark-${svgKey}`}
                   className="w-8 h-8 [&>svg]:w-full [&>svg]:h-full"
                   dangerouslySetInnerHTML={{ __html: modifiedSvg }}
                 />
