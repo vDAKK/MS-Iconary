@@ -35,7 +35,7 @@ export const SearchBar = ({
             glass border-2 border-border/50
             focus:border-primary focus:shadow-glow
             transition-all duration-smooth
-            rounded-l-none border-l-0
+            rounded-xl
             placeholder:text-muted-foreground/70
             font-medium
           "
