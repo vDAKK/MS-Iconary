@@ -20,41 +20,6 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
   const { copyImageToClipboard, copyTextToClipboard, downloadSvg } = useClipboard();
   const { toast } = useToast();
 
-  // Extraire les couleurs du SVG original
-  const extractedColors = useMemo(() => {
-    const foundColors = new Set<string>();
-    
-    // 1. Chercher dans les attributs fill et stroke
-    const attributeRegex = /(fill|stroke)="([^"]+)"/g;
-    let match;
-    while ((match = attributeRegex.exec(originalSvg)) !== null) {
-      const color = match[2];
-      if (isValidColor(color)) {
-        foundColors.add(color);
-      }
-    }
-    
-    // 2. Chercher dans les attributs style
-    const styleRegex = /style="[^"]*(?:fill|stroke):\s*([^;"\s]+)/g;
-    while ((match = styleRegex.exec(originalSvg)) !== null) {
-      const color = match[1];
-      if (isValidColor(color)) {
-        foundColors.add(color);
-      }
-    }
-    
-    // 3. Chercher dans les définitions de gradients et autres éléments
-    const stopRegex = /stop-color="([^"]+)"/g;
-    while ((match = stopRegex.exec(originalSvg)) !== null) {
-      const color = match[1];
-      if (isValidColor(color)) {
-        foundColors.add(color);
-      }
-    }
-
-    return Array.from(foundColors);
-  }, [originalSvg]);
-
   // Fonction pour valider si une couleur est modifiable
   const isValidColor = (color: string): boolean => {
     if (!color || color === 'none' || color === 'currentColor' || color === 'inherit') {
@@ -89,6 +54,41 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
     
     return false;
   };
+
+  // Extraire les couleurs du SVG original
+  const extractedColors = useMemo(() => {
+    const foundColors = new Set<string>();
+    
+    // 1. Chercher dans les attributs fill et stroke
+    const attributeRegex = /(fill|stroke)="([^"]+)"/g;
+    let match;
+    while ((match = attributeRegex.exec(originalSvg)) !== null) {
+      const color = match[2];
+      if (isValidColor(color)) {
+        foundColors.add(color);
+      }
+    }
+    
+    // 2. Chercher dans les attributs style
+    const styleRegex = /style="[^"]*(?:fill|stroke):\s*([^;"\s]+)/g;
+    while ((match = styleRegex.exec(originalSvg)) !== null) {
+      const color = match[1];
+      if (isValidColor(color)) {
+        foundColors.add(color);
+      }
+    }
+    
+    // 3. Chercher dans les définitions de gradients et autres éléments
+    const stopRegex = /stop-color="([^"]+)"/g;
+    while ((match = stopRegex.exec(originalSvg)) !== null) {
+      const color = match[1];
+      if (isValidColor(color)) {
+        foundColors.add(color);
+      }
+    }
+
+    return Array.from(foundColors);
+  }, [originalSvg, isValidColor]);
 
   // Initialiser les couleurs lors de l'ouverture
   useEffect(() => {
