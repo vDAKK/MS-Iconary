@@ -394,9 +394,10 @@ export const IconCard = ({
               icon-container
               text-foreground group-hover:text-primary
               transition-colors duration-smooth 
-              w-8 h-8 flex items-center justify-center 
-              [&>svg]:max-w-full [&>svg]:max-h-full
+              w-full h-full flex items-center justify-center 
+              [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-none [&>svg]:max-h-none
               [&>svg]:drop-shadow-sm [&>svg]:overflow-visible
+              [&>svg]:object-contain [&>svg]:object-center
             " 
             style={{ color: 'hsl(var(--foreground))' }}
             dangerouslySetInnerHTML={{ __html: cleanSvg(svg) }} 
