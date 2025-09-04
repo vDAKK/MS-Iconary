@@ -25,8 +25,13 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
 
   // Fonction pour valider si une couleur est modifiable
   const isValidColor = (color: string): boolean => {
-    if (!color || color === 'none' || color === 'currentColor' || color === 'inherit') {
+    if (!color || color === 'none' || color === 'inherit') {
       return false;
+    }
+    
+    // currentColor est maintenant considéré comme modifiable
+    if (color === 'currentColor') {
+      return true;
     }
     
     // Couleurs hexadécimales
@@ -98,7 +103,12 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
     if (isOpen) {
       const initialColors: { [key: string]: string } = {};
       extractedColors.forEach(color => {
-        initialColors[color] = color;
+        // Pour currentColor, utiliser la couleur du thème par défaut
+        if (color === 'currentColor') {
+          initialColors[color] = 'hsl(var(--foreground))';
+        } else {
+          initialColors[color] = color;
+        }
       });
       setColors(initialColors);
       setModifiedSvg(originalSvg);
@@ -178,13 +188,50 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
 
   // Fonction pour ajuster la taille du SVG
   const getSizedSvg = (svgString: string, size: number) => {
-    // Remplacer les attributs width et height dans le SVG
-    let sizedSvg = svgString.replace(/width="[^"]*"/g, `width="${size}"`);
+    let sizedSvg = svgString;
+    
+    // 1. Remplacer les attributs width et height existants
+    sizedSvg = sizedSvg.replace(/width="[^"]*"/g, `width="${size}"`);
     sizedSvg = sizedSvg.replace(/height="[^"]*"/g, `height="${size}"`);
     
-    // Si pas d'attributs width/height, les ajouter après la balise svg
-    if (!sizedSvg.includes('width=') || !sizedSvg.includes('height=')) {
-      sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 width="${size}" height="${size}">`);
+    // 2. Si pas d'attributs width/height, les ajouter
+    if (!sizedSvg.includes('width=')) {
+      sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 width="${size}">`);
+    }
+    if (!sizedSvg.includes('height=')) {
+      sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 height="${size}">`);
+    }
+    
+    // 3. Gérer les viewBox pour s'assurer que l'icône s'adapte correctement
+    if (sizedSvg.includes('viewBox=')) {
+      // Si un viewBox existe, s'assurer qu'il est cohérent
+      const viewBoxMatch = sizedSvg.match(/viewBox="([^"]+)"/);
+      if (viewBoxMatch) {
+        const [, viewBoxValue] = viewBoxMatch;
+        const viewBoxParts = viewBoxValue.split(/\s+/);
+        if (viewBoxParts.length === 4) {
+          // Garder le viewBox original pour préserver les proportions
+          // mais s'assurer que width et height sont définis
+        }
+      }
+    } else {
+      // Si pas de viewBox, en ajouter un basé sur la taille originale ou utiliser 0 0 24 24 par défaut
+      const originalWidthMatch = svgString.match(/width="([^"]+)"/);
+      const originalHeightMatch = svgString.match(/height="([^"]+)"/);
+      
+      if (originalWidthMatch && originalHeightMatch) {
+        const origW = originalWidthMatch[1];
+        const origH = originalHeightMatch[1];
+        // Extraire les valeurs numériques
+        const wNum = parseFloat(origW);
+        const hNum = parseFloat(origH);
+        if (!isNaN(wNum) && !isNaN(hNum)) {
+          sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 viewBox="0 0 ${wNum} ${hNum}">`);
+        }
+      } else {
+        // Fallback: utiliser une viewBox standard
+        sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 viewBox="0 0 24 24">`);
+      }
     }
     
     return sizedSvg;
@@ -335,18 +382,18 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
             
             {extractedColors.length > 0 ? (
               <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
-                {extractedColors.map((color, index) => (
-                  <div key={color} className="flex items-center gap-3">
-                    <Label className="text-sm font-medium w-16 flex-shrink-0">
-                      Couleur {index + 1}
-                    </Label>
-                    <ColorPicker
-                      value={colors[color] || color}
-                      onChange={(newColor) => handleColorChange(color, newColor)}
-                      originalColor={color}
-                    />
-                  </div>
-                ))}
+                 {extractedColors.map((color, index) => (
+                   <div key={color} className="flex items-center gap-3">
+                     <Label className="text-sm font-medium w-16 flex-shrink-0">
+                       {color === 'currentColor' ? 'Couleur' : `Couleur ${index + 1}`}
+                     </Label>
+                     <ColorPicker
+                       value={colors[color] || (color === 'currentColor' ? 'hsl(var(--foreground))' : color)}
+                       onChange={(newColor) => handleColorChange(color, newColor)}
+                       originalColor={color === 'currentColor' ? 'Couleur actuelle' : color}
+                     />
+                   </div>
+                 ))}
               </div>
             ) : (
               <div className="text-center py-8 text-muted-foreground">
