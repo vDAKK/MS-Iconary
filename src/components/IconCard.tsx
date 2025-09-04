@@ -385,13 +385,8 @@ export const IconCard = ({
       <div className="relative flex items-center justify-center h-12 w-12 mx-auto mb-4">
         <div className="
           relative w-10 h-10 rounded-lg 
-          bg-gradient-to-br from-secondary to-muted
-          border border-border/40
           flex items-center justify-center
           transition-all duration-smooth
-          group-hover:from-primary/15 group-hover:to-primary/8
-          group-hover:border-primary/30 group-hover:shadow-md group-hover:scale-105
-          shadow-sm
           overflow-visible
         ">
           <div 
@@ -400,7 +395,7 @@ export const IconCard = ({
               text-foreground group-hover:text-primary
               transition-colors duration-smooth 
               w-8 h-8 flex items-center justify-center 
-              [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-none [&>svg]:max-h-none
+              [&>svg]:max-w-full [&>svg]:max-h-full
               [&>svg]:drop-shadow-sm [&>svg]:overflow-visible
             " 
             style={{ color: 'hsl(var(--foreground))' }}
