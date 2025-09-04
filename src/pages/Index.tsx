@@ -189,27 +189,14 @@ const Index = () => {
                 <span className="text-primary font-medium">Cliquez pour copier en tant qu'image</span>, ou utilisez les actions pour le code SVG et le téléchargement.
               </p>
               
-              {/* Zone de recherche et filtres */}
-              <div className="flex items-center justify-center">
-                <div className="flex items-center gap-2.5">
-                  <div className="flex items-center h-12">
-                    <AdvancedFilters
-                      filters={filters}
-                      onFiltersChange={setFilters}
-                      availableCategories={availableCategories}
-                      favoritesCount={favoritesCount}
-                      onClearFavorites={clearFavorites}
-                    />
-                  </div>
-                  <div className="flex items-center h-12">
-                    <SearchBar 
-                      value={searchQuery} 
-                      onChange={setSearchQuery}
-                      placeholder="Rechercher une icône..."
-                      className="w-96"
-                    />
-                  </div>
-                </div>
+              {/* Zone de recherche */}
+              <div className="flex justify-center">
+                <SearchBar 
+                  value={searchQuery} 
+                  onChange={setSearchQuery}
+                  placeholder="Rechercher une icône..."
+                  className="w-96"
+                />
               </div>
 
               {/* Statistiques */}
@@ -230,6 +217,17 @@ const Index = () => {
 
         {/* Grille d'icônes avec scroll infini */}
         <main className="container mx-auto px-6 py-12" role="main">
+          {/* Bouton filtres au-dessus des icônes */}
+          <div className="flex justify-start mb-6">
+            <AdvancedFilters
+              filters={filters}
+              onFiltersChange={setFilters}
+              availableCategories={availableCategories}
+              favoritesCount={favoritesCount}
+              onClearFavorites={clearFavorites}
+            />
+          </div>
+
           {visibleIcons.length > 0 ? (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
