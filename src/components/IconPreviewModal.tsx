@@ -270,8 +270,8 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
             <div className="p-8 border border-border rounded-lg bg-background flex items-center justify-center">
               <div 
                 key={`main-${svgKey}`}
-                className="[&>svg]:w-full [&>svg]:h-full"
-                style={{ width: iconSize, height: iconSize }}
+                className="[&>svg]:w-full [&>svg]:h-full text-foreground"
+                style={{ width: iconSize, height: iconSize, color: 'hsl(var(--foreground))' }}
                 dangerouslySetInnerHTML={{ __html: modifiedSvg }}
               />
             </div>
@@ -281,21 +281,24 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
               <div className="p-4 bg-white border rounded-lg flex items-center justify-center">
                 <div 
                   key={`white-${svgKey}`}
-                  className="w-8 h-8 [&>svg]:w-full [&>svg]:h-full"
+                  className="w-8 h-8 [&>svg]:w-full [&>svg]:h-full text-gray-800"
+                  style={{ color: '#1f2937' }}
                   dangerouslySetInnerHTML={{ __html: modifiedSvg }}
                 />
               </div>
               <div className="p-4 bg-gray-100 border rounded-lg flex items-center justify-center">
                 <div 
                   key={`gray-${svgKey}`}
-                  className="w-8 h-8 [&>svg]:w-full [&>svg]:h-full"
+                  className="w-8 h-8 [&>svg]:w-full [&>svg]:h-full text-gray-700"
+                  style={{ color: '#374151' }}
                   dangerouslySetInnerHTML={{ __html: modifiedSvg }}
                 />
               </div>
               <div className="p-4 bg-gray-900 border rounded-lg flex items-center justify-center">
                 <div 
                   key={`dark-${svgKey}`}
-                  className="w-8 h-8 [&>svg]:w-full [&>svg]:h-full"
+                  className="w-8 h-8 [&>svg]:w-full [&>svg]:h-full text-white"
+                  style={{ color: '#ffffff' }}
                   dangerouslySetInnerHTML={{ __html: modifiedSvg }}
                 />
               </div>
