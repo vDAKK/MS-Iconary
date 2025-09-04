@@ -91,9 +91,51 @@ export const IconCard = ({
       return hasProblematicColors || hasNoColors;
     };
 
-    // Supprimer les logs maintenant que je comprends le problème
-    // L'icône utilise déjà currentColor mais l'élément parent n'avait pas de couleur définie
-    // Le style inline color: hsl(var(--foreground)) résout le problème
+    // Ne pas appliquer le traitement currentColor aux icônes colorées
+    // Détecter si l'icône a des couleurs vives (pas seulement grises/noires/blanches)
+    const hasVividColors = /#[0-9a-fA-F]{6}/.test(cleaned) && 
+      !/#(000000|ffffff|333333|666666|999999|cccccc|f0f0f0|e0e0e0|d0d0d0)$/i.test(cleaned);
+    
+    // Préserver les icônes colorées telles quelles
+    if (hasVividColors) {
+      return cleaned;
+    }
+    
+    // Seulement traiter les icônes monochromes
+    const forceCurrentColor = (svg: string): string => {
+      let processed = svg;
+      
+      // Liste des couleurs problématiques (seulement les grises/noires/blanches)
+      const problematicColors = [
+        '#000000', '#000', '#333333', '#333', '#666666', '#666', '#999999', '#999', 
+        '#212121', '#424242', 'black', 'gray', 'grey',
+        '#ffffff', '#fff', 'white', '#f0f0f0', '#e0e0e0', '#d0d0d0', '#cccccc', '#ccc'
+      ];
+      
+      // Remplacer SEULEMENT les couleurs problématiques par currentColor
+      problematicColors.forEach(color => {
+        const fillRegex = new RegExp(`fill="${color}"`, 'gi');
+        const strokeRegex = new RegExp(`stroke="${color}"`, 'gi');
+        processed = processed.replace(fillRegex, 'fill="currentColor"');
+        processed = processed.replace(strokeRegex, 'stroke="currentColor"');
+      });
+      
+      // Cas spéciaux pour les paths sans couleur définie
+      if (!processed.includes('fill=') && processed.includes('<path')) {
+        processed = processed.replace(/<path([^>]*)>/g, '<path$1 fill="currentColor">');
+      }
+      
+      // Ajouter currentColor au SVG racine si pas de couleur définie
+      if (!processed.includes('fill=') && !processed.includes('stroke=')) {
+        processed = processed.replace(/<svg([^>]*)>/, '<svg$1 fill="currentColor">');
+      }
+      
+      return processed;
+    };
+    
+    if (isMonochromeIcon(cleaned)) {
+      cleaned = forceCurrentColor(cleaned);
+    }
     
     return cleaned;
   };
