@@ -5,14 +5,28 @@ import { ThemeToggle } from '@/components/ThemeToggle';
 import { SEOHead } from '@/components/SEOHead';
 import { AdminPasswordModal } from '@/components/AdminPasswordModal';
 import { HiddenIconsManager } from '@/components/HiddenIconsManager';
+import { AdvancedFilters, FilterOptions } from '@/components/AdvancedFilters';
 import { iconsData, deleteIcon } from '@/data/icons';
-import { Sparkles, Copy, Download, Search, Palette, Shield } from 'lucide-react';
+import { useFavorites } from '@/hooks/useFavorites';
+import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
+import { Sparkles, Copy, Download, Search, Palette, Shield, Loader2 } from 'lucide-react';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isAdminMode, setIsAdminMode] = useState(false);
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [forceUpdate, setForceUpdate] = useState(0);
+  
+  // Système de favoris
+  const { favorites, toggleFavorite, isFavorite, clearFavorites, favoritesCount } = useFavorites();
+  
+  // Filtres avancés
+  const [filters, setFilters] = useState<FilterOptions>({
+    categories: [],
+    showFavoritesOnly: false,
+    sortBy: 'name',
+    sortOrder: 'asc'
+  });
 
   // Gestion des raccourcis clavier
   useEffect(() => {
@@ -34,13 +48,14 @@ const Index = () => {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, []);
 
-  // Filtrage des icônes basé sur la recherche avec limite de performance
-  const filteredIcons = useMemo(() => {
-    const query = searchQuery.toLowerCase().trim();
+  // Filtrage et tri des icônes avec logique avancée
+  const processedIcons = useMemo(() => {
     let result = iconsData;
     
+    // Filtre par recherche
+    const query = searchQuery.toLowerCase().trim();
     if (query) {
-      result = iconsData.filter(icon => {
+      result = result.filter(icon => {
         const nameMatch = icon.name.toLowerCase().includes(query);
         const categoryMatch = icon.category?.toLowerCase().includes(query);
         const keywordsMatch = icon.keywords?.some(keyword => 
@@ -51,9 +66,69 @@ const Index = () => {
       });
     }
     
-    // Limiter à 50 icônes pour éviter les lags
-    return result.slice(0, 50);
-  }, [searchQuery, forceUpdate]);
+    // Filtre par favoris
+    if (filters.showFavoritesOnly) {
+      result = result.filter(icon => isFavorite(icon.name));
+    }
+    
+    // Filtre par catégories
+    if (filters.categories.length > 0) {
+      result = result.filter(icon => 
+        icon.category && filters.categories.includes(icon.category)
+      );
+    }
+    
+    // Tri
+    result.sort((a, b) => {
+      let comparison = 0;
+      
+      switch (filters.sortBy) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'category':
+          comparison = (a.category || '').localeCompare(b.category || '');
+          break;
+        case 'recent':
+          // Simuler un tri par récent basé sur l'index
+          comparison = iconsData.indexOf(b) - iconsData.indexOf(a);
+          break;
+      }
+      
+      return filters.sortOrder === 'desc' ? -comparison : comparison;
+    });
+    
+    return result;
+  }, [searchQuery, forceUpdate, filters, isFavorite]);
+  
+  // Catégories disponibles pour les filtres
+  const availableCategories = useMemo(() => {
+    const categories = new Set<string>();
+    iconsData.forEach(icon => {
+      if (icon.category) {
+        categories.add(icon.category);
+      }
+    });
+    return Array.from(categories).sort();
+  }, []);
+
+  // Scroll infini
+  const {
+    visibleItems: visibleIcons,
+    isLoading: isLoadingMore,
+    hasMore,
+    visibleCount,
+    reset: resetInfiniteScroll
+  } = useInfiniteScroll(processedIcons, {
+    initialItemsPerPage: 24,
+    itemsPerPage: 12,
+    threshold: 200
+  });
+
+  // Reset du scroll infini quand les filtres changent
+  useEffect(() => {
+    resetInfiniteScroll();
+  }, [processedIcons, resetInfiniteScroll]);
 
   // SEO dynamique basé sur la recherche
   const seoTitle = searchQuery 
@@ -61,7 +136,7 @@ const Index = () => {
     : "MS-Iconary - Collection d'Icônes SVG Microsoft | Copie en 1 Clic";
     
   const seoDescription = searchQuery
-    ? `Découvrez ${filteredIcons.length} icône${filteredIcons.length > 1 ? 's' : ''} Microsoft pour "${searchQuery}". Copie d'image, code SVG et téléchargement en 1 clic.`
+    ? `Découvrez ${processedIcons.length} icône${processedIcons.length > 1 ? 's' : ''} Microsoft pour "${searchQuery}". Copie d'image, code SVG et téléchargement en 1 clic.`
     : "Collection premium d'icônes SVG Microsoft avec copie d'image, code SVG et téléchargement en 1 clic. Plus de 100 icônes Azure, Office, Teams optimisées pour développeurs.";
 
   const handleDeleteIcon = (filePath: string) => {
@@ -113,89 +188,109 @@ const Index = () => {
                 <span className="text-primary font-medium">Cliquez pour copier en tant qu'image</span>, ou utilisez les actions pour le code SVG et le téléchargement.
               </p>
               
-              {/* Barre de recherche */}
-              <div className="pt-6">
-                <SearchBar 
-                  value={searchQuery}
-                  onChange={setSearchQuery}
-                  placeholder="Rechercher parmi notre collection..."
-                />
+              {/* Zone de contrôles */}
+              <div className="flex flex-col sm:flex-row gap-4 items-center justify-between">
+                <div className="flex flex-col sm:flex-row gap-4 items-center flex-1">
+                  <SearchBar 
+                    value={searchQuery} 
+                    onChange={setSearchQuery}
+                    placeholder="Rechercher une icône..."
+                  />
+                  <AdvancedFilters
+                    filters={filters}
+                    onFiltersChange={setFilters}
+                    availableCategories={availableCategories}
+                    favoritesCount={favoritesCount}
+                    onClearFavorites={clearFavorites}
+                  />
+                </div>
+              </div>
+
+              {/* Statistiques */}
+              <div className="text-center space-y-2">
+                <p className="text-muted-foreground text-sm">
+                  {visibleCount} icône{visibleCount > 1 ? 's' : ''} affichée{visibleCount > 1 ? 's' : ''} 
+                  {processedIcons.length !== visibleCount && ` sur ${processedIcons.length} total${processedIcons.length > 1 ? 'es' : ''}`}
+                  {favoritesCount > 0 && (
+                    <span className="ml-2 text-red-500">
+                      • {favoritesCount} favori{favoritesCount > 1 ? 's' : ''}
+                    </span>
+                  )}
+                </p>
+                <div className="text-xs text-muted-foreground/80 flex items-center justify-center gap-2">
+                  <kbd className="px-2 py-1 bg-muted/30 rounded text-xs border border-border/30">Ctrl+K</kbd>
+                  pour rechercher
+                </div>
               </div>
             </div>
           </div>
         </header>
 
-        {/* Stats et info */}
-        <section className="container mx-auto px-6 py-8" aria-label="Statistiques de la collection">
-          <div className="flex flex-wrap items-center justify-center gap-8 text-center">
-            <div className="flex items-center gap-3 px-4 py-2 glass rounded-lg border border-border/30">
-              <Copy className="w-5 h-5 text-primary" />
-              <div className="text-left">
-                <div className="text-lg font-semibold text-foreground">
-                  {filteredIcons.length}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Icône{filteredIcons.length > 1 ? 's' : ''} affichée{filteredIcons.length > 1 ? 's' : ''} 
-                  {filteredIcons.length === 50 ? ' (max)' : ''}
-                </div>
+        {/* Grille d'icônes avec scroll infini */}
+        <main className="container mx-auto px-6 py-12" role="main">
+          {visibleIcons.length > 0 ? (
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
+                {visibleIcons.map((icon, index) => (
+                  <IconCard
+                    key={`${icon.name}-${index}`}
+                    name={icon.name}
+                    svg={icon.svg}
+                    filePath={icon.filePath}
+                    isAdminMode={isAdminMode}
+                    onDelete={handleDeleteIcon}
+                    isFavorite={isFavorite(icon.name)}
+                    onToggleFavorite={toggleFavorite}
+                    style={{
+                      animationDelay: `${(index % 12) * 50}ms`
+                    }}
+                  />
+                ))}
               </div>
-            </div>
-
-            {searchQuery && (
-              <div className="flex items-center gap-3 px-4 py-2 glass rounded-lg border border-border/30 animate-scale-in">
-                <Download className="w-5 h-5 text-accent-foreground" />
-                <div className="text-left">
-                  <div className="text-sm text-muted-foreground">
-                    Résultats pour
-                  </div>
-                  <div className="text-sm font-medium text-foreground">
-                    "{searchQuery}"
-                  </div>
+              
+              {/* Indicateur de chargement */}
+              {isLoadingMore && (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  <span className="ml-2 text-muted-foreground">Chargement...</span>
                 </div>
-              </div>
-            )}
-
-            <div className="text-sm text-muted-foreground/80 flex items-center gap-2">
-              <kbd className="px-2 py-1 bg-muted/30 rounded text-xs border border-border/30">Ctrl+K</kbd>
-              pour rechercher
-            </div>
-          </div>
-        </section>
-
-        {/* Grille d'icônes */}
-        <main className="container mx-auto px-6 pb-16" role="main" aria-label="Collection d'icônes SVG Microsoft">
-          {filteredIcons.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10 gap-4">
-              {filteredIcons.map((icon, index) => (
-                <IconCard
-                  key={`${icon.filePath}-${index}`}
-                  name={icon.name}
-                  svg={icon.svg}
-                  filePath={icon.filePath!}
-                  isAdminMode={isAdminMode}
-                  onDelete={handleDeleteIcon}
-                  className="animate-fade-in"
-                  style={{ animationDelay: `${index * 50}ms` } as React.CSSProperties}
-                />
-              ))}
-            </div>
+              )}
+              
+              {/* Indicateur de fin */}
+              {!hasMore && processedIcons.length > 24 && (
+                <div className="text-center py-8 text-muted-foreground text-sm">
+                  Toutes les icônes ont été affichées
+                </div>
+              )}
+            </>
           ) : (
-            <div className="text-center py-20 animate-fade-in">
-              <div className="w-24 h-24 mx-auto mb-6 rounded-full glass border border-border/30 flex items-center justify-center">
-                <Search className="w-8 h-8 text-muted-foreground" />
-              </div>
-              <h3 className="text-xl font-semibold text-foreground mb-2">
-                Aucune icône trouvée
-              </h3>
-              <p className="text-muted-foreground mb-6">
-                Aucun résultat pour "{searchQuery}". Essayez un autre terme de recherche.
+            <div className="text-center py-20">
+              <Search className="w-16 h-16 mx-auto mb-4 text-muted-foreground opacity-50" />
+              <h3 className="text-xl font-semibold mb-2">Aucune icône trouvée</h3>
+              <p className="text-muted-foreground mb-4">
+                {searchQuery 
+                  ? `Aucun résultat pour "${searchQuery}"`
+                  : filters.showFavoritesOnly 
+                    ? "Aucun favori pour le moment"
+                    : "Aucune icône disponible avec ces filtres"
+                }
               </p>
-              <button
-                onClick={() => setSearchQuery('')}
-                className="px-6 py-3 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary-hover transition-colors duration-smooth hover:shadow-colored"
-              >
-                Effacer la recherche
-              </button>
+              {(searchQuery || filters.categories.length > 0 || filters.showFavoritesOnly) && (
+                <button
+                  onClick={() => {
+                    setSearchQuery('');
+                    setFilters({
+                      categories: [],
+                      showFavoritesOnly: false,
+                      sortBy: 'name',
+                      sortOrder: 'asc'
+                    });
+                  }}
+                  className="text-primary hover:underline"
+                >
+                  Réinitialiser les filtres
+                </button>
+              )}
             </div>
           )}
         </main>
@@ -217,7 +312,7 @@ const Index = () => {
                   <span className="w-1 h-1 bg-muted-foreground rounded-full" />
                   <span className="flex items-center gap-2">
                     <Sparkles className="w-4 h-4" />
-                    {iconsData.length} icônes (50 max affichées)
+                    {iconsData.length} icônes totales
                   </span>
                 </div>
               
