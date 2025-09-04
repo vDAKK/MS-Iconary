@@ -119,12 +119,12 @@ const Index = () => {
     visibleItems: visibleIcons,
     isLoading: isLoadingMore,
     hasMore,
+    loadMore,
     visibleCount,
     reset: resetInfiniteScroll
   } = useInfiniteScroll(processedIcons, {
     initialItemsPerPage: 24,
-    itemsPerPage: 12,
-    threshold: 100 // Réduit pour laisser plus d'espace au footer
+    itemsPerPage: 12
   });
 
   // Reset du scroll infini quand les filtres changent
@@ -292,6 +292,29 @@ const Index = () => {
                   Réinitialiser les filtres
                 </button>
               )}
+            </div>
+          )}
+
+          {/* Bouton Charger plus */}
+          {hasMore && visibleIcons.length > 0 && (
+            <div className="flex justify-center py-8">
+              <button
+                onClick={loadMore}
+                disabled={isLoadingMore}
+                className="flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              >
+                {isLoadingMore ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Chargement...
+                  </>
+                ) : (
+                  <>
+                    <Download className="w-4 h-4" />
+                    Charger plus ({processedIcons.length - visibleCount} restantes)
+                  </>
+                )}
+              </button>
             </div>
           )}
         </main>
