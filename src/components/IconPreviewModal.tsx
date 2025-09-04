@@ -106,6 +106,8 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
   // Mettre à jour le SVG quand les couleurs changent
   useEffect(() => {
     let updated = originalSvg;
+    const timestamp = Date.now();
+    
     Object.entries(colors).forEach(([original, newColor]) => {
       if (original !== newColor) {
         console.log(`Replacing color: ${original} → ${newColor}`);
@@ -146,6 +148,13 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
         console.log('Final updated SVG contains new color:', updated.includes(newColor));
       }
     });
+    
+    // Forcer l'invalidation du cache en changeant tous les IDs des gradients et références
+    updated = updated.replace(/id="([^"]+)"/g, `id="$1-${timestamp}"`);
+    updated = updated.replace(/url\(#([^)]+)\)/g, `url(#$1-${timestamp})`);
+    updated = updated.replace(/href="#([^"]+)"/g, `href="#$1-${timestamp}"`);
+    updated = updated.replace(/xlink:href="#([^"]+)"/g, `xlink:href="#$1-${timestamp}"`);
+    
     setModifiedSvg(updated);
     setSvgKey(prev => prev + 1); // Forcer le re-rendu
   }, [colors, originalSvg]);
