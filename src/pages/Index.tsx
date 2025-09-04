@@ -124,7 +124,7 @@ const Index = () => {
     reset: resetInfiniteScroll
   } = useInfiniteScroll(processedIcons, {
     initialItemsPerPage: 24,
-    itemsPerPage: 12
+    itemsPerPage: 24 // Charge 24 éléments au lieu de 12
   });
 
   // Reset du scroll infini quand les filtres changent
