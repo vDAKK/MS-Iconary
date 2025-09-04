@@ -2,7 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Download, Palette, Copy, RotateCcw } from 'lucide-react';
+import { Slider } from "@/components/ui/slider";
+import { Download, Palette, Copy, RotateCcw, Maximize2 } from 'lucide-react';
 import { useClipboard } from '@/hooks/useClipboard';
 import { useToast } from '@/hooks/use-toast';
 import { ColorPicker } from '@/components/ColorPicker';
@@ -18,6 +19,7 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
   const [modifiedSvg, setModifiedSvg] = useState(originalSvg);
   const [colors, setColors] = useState<{ [key: string]: string }>({});
   const [svgKey, setSvgKey] = useState(0); // Clé pour forcer le re-rendu
+  const [iconSize, setIconSize] = useState(96); // Taille en pixels
   const { copyImageToClipboard, copyTextToClipboard, downloadSvg } = useClipboard();
   const { toast } = useToast();
 
@@ -223,13 +225,36 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 overflow-y-auto max-h-[70vh]">
           {/* Prévisualisation */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Prévisualisation</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Prévisualisation</h3>
+            </div>
+            
+            {/* Contrôle de taille */}
+            <div className="space-y-2">
+              <Label className="text-sm font-medium flex items-center gap-2">
+                <Maximize2 className="w-4 h-4" />
+                Taille: {iconSize}px
+              </Label>
+              <Slider
+                value={[iconSize]}
+                onValueChange={(value) => setIconSize(value[0])}
+                min={24}
+                max={256}
+                step={8}
+                className="w-full"
+              />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>24px</span>
+                <span>256px</span>
+              </div>
+            </div>
             
             {/* Vue normale */}
             <div className="p-8 border border-border rounded-lg bg-background flex items-center justify-center">
               <div 
                 key={`main-${svgKey}`}
-                className="w-24 h-24 [&>svg]:w-full [&>svg]:h-full"
+                className="[&>svg]:w-full [&>svg]:h-full"
+                style={{ width: iconSize, height: iconSize }}
                 dangerouslySetInnerHTML={{ __html: modifiedSvg }}
               />
             </div>
