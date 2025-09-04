@@ -189,19 +189,21 @@ const Index = () => {
               </p>
               
               {/* Zone de recherche et filtres */}
-              <div className="flex items-center justify-center gap-3">
-                <AdvancedFilters
-                  filters={filters}
-                  onFiltersChange={setFilters}
-                  availableCategories={availableCategories}
-                  favoritesCount={favoritesCount}
-                  onClearFavorites={clearFavorites}
-                />
-                <SearchBar 
-                  value={searchQuery} 
-                  onChange={setSearchQuery}
-                  placeholder="Rechercher une icône..."
-                />
+              <div className="flex items-center justify-center">
+                <div className="flex items-center">
+                  <AdvancedFilters
+                    filters={filters}
+                    onFiltersChange={setFilters}
+                    availableCategories={availableCategories}
+                    favoritesCount={favoritesCount}
+                    onClearFavorites={clearFavorites}
+                  />
+                  <SearchBar 
+                    value={searchQuery} 
+                    onChange={setSearchQuery}
+                    placeholder="Rechercher une icône..."
+                  />
+                </div>
               </div>
 
               {/* Statistiques */}
