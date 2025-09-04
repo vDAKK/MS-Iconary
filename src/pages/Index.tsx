@@ -47,12 +47,13 @@ const Index = () => {
         await SemanticSearchService.initialize();
         console.log('✅ SemanticSearchService initialized');
         
-        console.log('🧠 Generating icon embeddings...');
-        await SemanticSearchService.generateIconEmbeddings(iconsData);
-        console.log('✅ Icon embeddings generated');
+        console.log('🧠 Generating embeddings for popular icons (limited set)...');
+        // Ne générer que les embeddings pour les 150 premières icônes au démarrage
+        await SemanticSearchService.generateIconEmbeddings(iconsData, 150);
+        console.log('✅ Initial embeddings generated');
         
         setIsSemanticReady(true);
-        console.log('🎉 Semantic search fully ready!');
+        console.log('🎉 Semantic search ready! (Progressive loading enabled)');
       } catch (error) {
         console.error('❌ Failed to initialize semantic search:', error);
         setIsSemanticReady(false);
@@ -66,7 +67,7 @@ const Index = () => {
     setTimeout(() => {
       console.log('⏰ Starting semantic search initialization (delayed)');
       initSemanticSearch();
-    }, 1000);
+    }, 2000); // Délai plus long pour laisser l'UI se charger
   }, []);
 
   // Gestion des raccourcis clavier
@@ -203,12 +204,13 @@ const Index = () => {
   // Gestion de la recherche sémantique
   const handleSemanticSearch = async (query: string) => {
     try {
-      const results = await SemanticSearchService.semanticSearch(query, 50);
+      // Passer la liste complète des icônes pour permettre la génération à la demande
+      const results = await SemanticSearchService.semanticSearch(query, iconsData, 50);
       const iconNames = results.map(r => r.name);
       setSemanticResults(iconNames);
       
-      // Optionnel : afficher les scores dans la console pour debug
-      console.log('Semantic search results:', results);
+      // Afficher les scores dans la console pour debug
+      console.log('Semantic search results:', results.slice(0, 10)); // Top 10 seulement
     } catch (error) {
       console.error('Semantic search failed:', error);
       setSemanticResults([]);
@@ -300,7 +302,12 @@ const Index = () => {
                 {isSemanticLoading && (
                   <div className="flex items-center justify-center mt-2 text-xs text-muted-foreground">
                     <Loader2 className="w-3 h-3 mr-1 animate-spin" />
-                    Initialisation de la recherche sémantique... (Debug: loading={isSemanticLoading.toString()}, ready={isSemanticReady.toString()})
+                    Initialisation rapide de la recherche sémantique...
+                  </div>
+                )}
+                {isSemanticReady && !isSemanticLoading && (
+                  <div className="flex items-center justify-center mt-2 text-xs text-primary/60">
+                    ✨ Recherche sémantique prête (chargement progressif)
                   </div>
                 )}
               </div>

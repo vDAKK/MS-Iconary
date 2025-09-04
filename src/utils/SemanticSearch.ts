@@ -47,18 +47,21 @@ export class SemanticSearchService {
   }
 
   // Générer des embeddings pour toutes les icônes
-  static async generateIconEmbeddings(icons: any[]) {
+  static async generateIconEmbeddings(icons: any[], maxIcons: number = 200) {
     if (!this.isInitialized) {
       await this.initialize();
     }
 
-    console.log('Generating embeddings for', icons.length, 'icons...');
+    // Limiter le nombre d'icônes pour éviter la surcharge
+    const iconsToProcess = icons.slice(0, maxIcons);
+    console.log(`Generating embeddings for ${iconsToProcess.length} icons (limited from ${icons.length})...`);
+    
     this.iconEmbeddings = [];
 
-    // Traiter par batch pour éviter les problèmes de mémoire
-    const batchSize = 10;
-    for (let i = 0; i < icons.length; i += batchSize) {
-      const batch = icons.slice(i, i + batchSize);
+    // Traiter par batch plus petits
+    const batchSize = 5;
+    for (let i = 0; i < iconsToProcess.length; i += batchSize) {
+      const batch = iconsToProcess.slice(i, i + batchSize);
       
       for (const icon of batch) {
         try {
@@ -81,11 +84,45 @@ export class SemanticSearchService {
         }
       }
       
-      // Petit délai pour ne pas surcharger
-      await new Promise(resolve => setTimeout(resolve, 10));
+      // Délai plus long pour ne pas surcharger
+      await new Promise(resolve => setTimeout(resolve, 50));
+      
+      // Progress indicator
+      if (i % 20 === 0) {
+        console.log(`Progress: ${i + batchSize}/${iconsToProcess.length} embeddings generated`);
+      }
     }
     
-    console.log('Generated embeddings for', this.iconEmbeddings.length, 'icons');
+    console.log(`✅ Generated embeddings for ${this.iconEmbeddings.length} icons (${((this.iconEmbeddings.length / icons.length) * 100).toFixed(1)}% of total)`);
+  }
+
+  // Générer des embeddings supplémentaires à la demande
+  static async generateEmbeddingOnDemand(icon: any): Promise<boolean> {
+    if (!this.isInitialized) return false;
+    
+    // Vérifier si l'embedding existe déjà
+    if (this.iconEmbeddings.find(e => e.name === icon.name)) {
+      return true;
+    }
+
+    try {
+      const descriptiveText = this.createDescriptiveText(icon);
+      const embedding = await this.extractor(descriptiveText, {
+        pooling: 'mean',
+        normalize: true
+      });
+      
+      this.iconEmbeddings.push({
+        name: icon.name,
+        embedding: embedding.tolist()[0],
+        text: descriptiveText
+      });
+      
+      return true;
+    } catch (error) {
+      console.warn(`Failed to generate on-demand embedding for ${icon.name}:`, error);
+      return false;
+    }
   }
 
   // Créer un texte descriptif pour une icône
@@ -162,9 +199,10 @@ export class SemanticSearchService {
     return [...new Set(matches)]; // Supprimer les doublons
   }
 
-  // Recherche sémantique
-  static async semanticSearch(query: string, limit: number = 20): Promise<{ name: string; score: number }[]> {
-    if (!this.isInitialized || this.iconEmbeddings.length === 0) {
+  // Recherche sémantique avec génération d'embeddings à la demande
+  static async semanticSearch(query: string, icons: any[], limit: number = 20): Promise<{ name: string; score: number }[]> {
+    if (!this.isInitialized) {
+      console.warn('Semantic search not initialized');
       return [];
     }
 
@@ -177,8 +215,24 @@ export class SemanticSearchService {
       
       const queryVector = queryEmbedding.tolist()[0];
 
-      // Calculer les similarités
-      const similarities = this.iconEmbeddings.map(icon => ({
+      // Générer des embeddings pour les icônes qui n'en ont pas encore
+      const missingIcons = icons.filter(icon => 
+        !this.iconEmbeddings.find(e => e.name === icon.name)
+      );
+
+      if (missingIcons.length > 0) {
+        console.log(`Generating embeddings for ${missingIcons.length} missing icons...`);
+        for (const icon of missingIcons.slice(0, 50)) { // Limiter à 50 icônes supplémentaires
+          await this.generateEmbeddingOnDemand(icon);
+        }
+      }
+
+      // Calculer les similarités uniquement pour les icônes avec embeddings
+      const availableEmbeddings = this.iconEmbeddings.filter(embedding =>
+        icons.find(icon => icon.name === embedding.name)
+      );
+
+      const similarities = availableEmbeddings.map(icon => ({
         name: icon.name,
         score: this.cosineSimilarity(queryVector, icon.embedding)
       }));
@@ -187,7 +241,7 @@ export class SemanticSearchService {
       return similarities
         .sort((a, b) => b.score - a.score)
         .slice(0, limit)
-        .filter(result => result.score > 0.3); // Seuil de pertinence
+        .filter(result => result.score > 0.2); // Seuil de pertinence plus bas
     } catch (error) {
       console.error('Semantic search failed:', error);
       return [];
