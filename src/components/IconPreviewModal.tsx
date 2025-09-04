@@ -256,10 +256,10 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
             </div>
             
             {extractedColors.length > 0 ? (
-              <div className="space-y-4 max-h-80 overflow-y-auto pr-2">
+              <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2">
                 {extractedColors.map((color, index) => (
-                  <div key={color} className="space-y-2">
-                    <Label className="text-sm font-medium">
+                  <div key={color} className="flex items-center gap-3">
+                    <Label className="text-sm font-medium w-16 flex-shrink-0">
                       Couleur {index + 1}
                     </Label>
                     <ColorPicker
