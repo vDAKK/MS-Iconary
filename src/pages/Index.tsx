@@ -64,8 +64,8 @@ const Index = () => {
     ? `Découvrez ${filteredIcons.length} icône${filteredIcons.length > 1 ? 's' : ''} Microsoft pour "${searchQuery}". Copie d'image, code SVG et téléchargement en 1 clic.`
     : "Collection premium d'icônes SVG Microsoft avec copie d'image, code SVG et téléchargement en 1 clic. Plus de 100 icônes Azure, Office, Teams optimisées pour développeurs.";
 
-  const handleDeleteIcon = (iconName: string) => {
-    deleteIcon(iconName);
+  const handleDeleteIcon = (filePath: string) => {
+    deleteIcon(filePath);
     setForceUpdate(prev => prev + 1); // Force le re-render
   };
 
@@ -168,9 +168,10 @@ const Index = () => {
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 2xl:grid-cols-10 gap-4">
               {filteredIcons.map((icon, index) => (
                 <IconCard
-                  key={`${icon.name}-${index}`}
+                  key={`${icon.filePath}-${index}`}
                   name={icon.name}
                   svg={icon.svg}
+                  filePath={icon.filePath!}
                   isAdminMode={isAdminMode}
                   onDelete={handleDeleteIcon}
                   className="animate-fade-in"
