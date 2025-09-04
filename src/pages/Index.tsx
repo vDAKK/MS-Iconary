@@ -3,18 +3,29 @@ import { SearchBar } from '@/components/SearchBar';
 import { IconCard } from '@/components/IconCard';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { SEOHead } from '@/components/SEOHead';
-import { iconsData } from '@/data/icons';
-import { Sparkles, Copy, Download, Search, Palette } from 'lucide-react';
+import { AdminPasswordModal } from '@/components/AdminPasswordModal';
+import { iconsData, deleteIcon } from '@/data/icons';
+import { Sparkles, Copy, Download, Search, Palette, Shield } from 'lucide-react';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isAdminMode, setIsAdminMode] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [forceUpdate, setForceUpdate] = useState(0);
 
   // Gestion des raccourcis clavier
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Raccourci de recherche
       if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
         e.preventDefault();
         document.querySelector<HTMLInputElement>('input[type="text"]')?.focus();
+      }
+      
+      // Raccourci caché pour le mode admin (Ctrl+Shift+Alt+A)
+      if (e.ctrlKey && e.shiftKey && e.altKey && e.key === 'A') {
+        e.preventDefault();
+        setShowPasswordModal(true);
       }
     };
 
@@ -41,7 +52,7 @@ const Index = () => {
     
     // Limiter à 50 icônes pour éviter les lags
     return result.slice(0, 50);
-  }, [searchQuery]);
+  }, [searchQuery, forceUpdate]);
 
   // SEO dynamique basé sur la recherche
   const seoTitle = searchQuery 
@@ -51,6 +62,11 @@ const Index = () => {
   const seoDescription = searchQuery
     ? `Découvrez ${filteredIcons.length} icône${filteredIcons.length > 1 ? 's' : ''} Microsoft pour "${searchQuery}". Copie d'image, code SVG et téléchargement en 1 clic.`
     : "Collection premium d'icônes SVG Microsoft avec copie d'image, code SVG et téléchargement en 1 clic. Plus de 100 icônes Azure, Office, Teams optimisées pour développeurs.";
+
+  const handleDeleteIcon = (iconName: string) => {
+    deleteIcon(iconName);
+    setForceUpdate(prev => prev + 1); // Force le re-render
+  };
 
   return (
     <>
@@ -153,6 +169,8 @@ const Index = () => {
                   key={`${icon.name}-${index}`}
                   name={icon.name}
                   svg={icon.svg}
+                  isAdminMode={isAdminMode}
+                  onDelete={handleDeleteIcon}
                   className="animate-fade-in"
                   style={{ animationDelay: `${index * 50}ms` } as React.CSSProperties}
                 />
@@ -219,6 +237,23 @@ const Index = () => {
             </div>
           </div>
         </footer>
+
+        {/* Indicateur mode admin */}
+        {isAdminMode && (
+          <div className="fixed bottom-4 right-4 z-40">
+            <div className="flex items-center gap-2 px-3 py-2 bg-destructive text-destructive-foreground rounded-lg text-sm font-medium animate-pulse border border-destructive/50">
+              <Shield className="w-4 h-4" />
+              Mode Admin Actif
+            </div>
+          </div>
+        )}
+
+        {/* Modal de mot de passe admin */}
+        <AdminPasswordModal
+          isOpen={showPasswordModal}
+          onClose={() => setShowPasswordModal(false)}
+          onSuccess={() => setIsAdminMode(true)}
+        />
       </div>
     </>
   );

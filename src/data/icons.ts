@@ -83,7 +83,7 @@ function generateKeywords(name: string, category: string): string[] {
 }
 
 // Convert imported SVG modules to IconData format
-export const iconsData: IconData[] = Object.entries(iconModules).map(([path, content]) => {
+let iconsDataArray: IconData[] = Object.entries(iconModules).map(([path, content]) => {
   const name = extractIconName(path);
   const category = extractCategory(path);
   
@@ -94,3 +94,11 @@ export const iconsData: IconData[] = Object.entries(iconModules).map(([path, con
     keywords: generateKeywords(name, category)
   };
 }).sort((a, b) => a.name.localeCompare(b.name));
+
+// Fonction pour supprimer une icône
+export const deleteIcon = (iconName: string): void => {
+  iconsDataArray = iconsDataArray.filter(icon => icon.name !== iconName);
+};
+
+// Export de la liste d'icônes
+export const iconsData: IconData[] = iconsDataArray;
