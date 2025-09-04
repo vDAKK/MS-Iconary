@@ -32,26 +32,52 @@ export const useClipboard = () => {
   // Fonction pour copier une image SVG
   const copyImageToClipboard = async (svgString: string, iconName?: string) => {
     try {
-      // Vérifier si le navigateur supporte ClipboardItem
-      if (!window.ClipboardItem) {
-        throw new Error('ClipboardItem not supported');
+      // Détecter Firefox
+      const isFirefox = navigator.userAgent.toLowerCase().includes('firefox');
+      
+      if (isFirefox) {
+        // Pour Firefox, convertir en PNG
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
+        
+        await new Promise((resolve, reject) => {
+          img.onload = () => {
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx?.drawImage(img, 0, 0);
+            resolve(true);
+          };
+          img.onerror = reject;
+          img.src = 'data:image/svg+xml;base64,' + btoa(svgString);
+        });
+        
+        // Convertir en blob PNG
+        const blob = await new Promise<Blob>((resolve) => {
+          canvas.toBlob((blob) => resolve(blob!), 'image/png');
+        });
+        
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'image/png': blob
+          })
+        ]);
+      } else {
+        // Pour les autres navigateurs, utiliser SVG
+        const svgBlob = new Blob([svgString], { type: 'image/svg+xml' });
+        
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'image/svg+xml': svgBlob
+          })
+        ]);
       }
-
-      // Créer un blob SVG
-      const svgBlob = new Blob([svgString], { type: 'image/svg+xml' });
-
-      // Essayer de copier en tant qu'image SVG
-      await navigator.clipboard.write([
-        new ClipboardItem({
-          'image/svg+xml': svgBlob
-        })
-      ]);
 
       setCopied(true);
       
       toast({
         title: "Image copiée !",
-        description: `L'icône ${iconName || ''} a été copiée en tant qu'image SVG`,
+        description: `L'icône ${iconName || ''} a été copiée en tant qu'image ${isFirefox ? 'PNG' : 'SVG'}`,
         duration: 2000,
       });
 
