@@ -19,13 +19,13 @@ export const DeleteConfirmModal = ({ isOpen, onClose, onConfirm, onHide, iconNam
             Icône sélectionnée : "<strong>{iconName}</strong>"
             <br />
             <br />
-            <strong>Masquer</strong> : L'icône ne sera plus visible mais restera dans GitHub<br />
+            <strong>Masquer</strong> : L'icône sera masquée de manière persistante<br />
             <small className="text-muted-foreground">
-              → Déplacez manuellement le fichier dans un dossier "hidden" pour un masquage permanent
+              → La configuration sera automatiquement générée pour GitHub
             </small>
             <br />
             <br />
-            <strong>Supprimer</strong> : Suppression temporaire (côté client uniquement)
+            <strong>Supprimer</strong> : Suppression temporaire (session actuelle uniquement)
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="flex gap-2">

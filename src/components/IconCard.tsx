@@ -3,6 +3,7 @@ import { Check, Copy, Download, Code, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
 import { useToast } from '@/hooks/use-toast';
+import { hideIcon } from '@/data/icons';
 
 interface IconCardProps {
   name: string;
@@ -109,14 +110,16 @@ export const IconCard = ({
     setShowDeleteModal(false);
   };
 
-  const confirmHide = () => {
-    if (onDelete) {
-      onDelete(name);
+  const confirmHide = async () => {
+    try {
+      await hideIcon(name);
       toast({
         title: "Icône masquée", 
-        description: `L'icône "${name}" a été masquée. Pour un masquage permanent, déplacez le fichier dans un dossier "hidden".`,
-        duration: 6000,
+        description: `L'icône "${name}" a été masquée. Consultez la console pour la configuration à committer dans GitHub.`,
+        duration: 8000,
       });
+    } catch (error) {
+      console.error('Erreur lors du masquage:', error);
     }
     setShowDeleteModal(false);
   };

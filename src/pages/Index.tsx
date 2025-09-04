@@ -4,6 +4,7 @@ import { IconCard } from '@/components/IconCard';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { SEOHead } from '@/components/SEOHead';
 import { AdminPasswordModal } from '@/components/AdminPasswordModal';
+import { HiddenIconsManager } from '@/components/HiddenIconsManager';
 import { iconsData, deleteIcon } from '@/data/icons';
 import { Sparkles, Copy, Download, Search, Palette, Shield } from 'lucide-react';
 
@@ -88,7 +89,8 @@ const Index = () => {
         <header className="relative border-b border-border/30 glass backdrop-blur-xl" role="banner">
           <div className="container mx-auto px-6 py-12">
             {/* Toggle de thème */}
-            <div className="absolute top-6 right-6">
+            <div className="absolute top-6 right-6 flex gap-2">
+              {isAdminMode && <HiddenIconsManager />}
               <ThemeToggle />
             </div>
             

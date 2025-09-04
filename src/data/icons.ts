@@ -5,6 +5,14 @@ export interface IconData {
   keywords?: string[];
 }
 
+export interface HiddenIconsConfig {
+  hiddenIcons: string[];
+  lastUpdated: string;
+}
+
+// Import hidden icons configuration
+import hiddenIconsConfig from './hidden-icons.json';
+
 // Dynamically import all SVG files from src/icons, excluding hidden folder
 const iconModules = import.meta.glob('/src/icons/**/*.svg', { 
   query: '?raw', 
@@ -12,9 +20,16 @@ const iconModules = import.meta.glob('/src/icons/**/*.svg', {
   eager: true 
 });
 
-// Filter out icons in hidden folders
+// Filter out icons in hidden folders AND icons in hidden-icons.json
 const filteredIconModules = Object.fromEntries(
-  Object.entries(iconModules).filter(([path]) => !path.includes('/hidden/'))
+  Object.entries(iconModules).filter(([path]) => {
+    // Exclude hidden folders
+    if (path.includes('/hidden/')) return false;
+    
+    // Exclude icons listed in hidden-icons.json
+    const iconName = extractIconName(path);
+    return !hiddenIconsConfig.hiddenIcons.includes(iconName);
+  })
 );
 
 function cleanIconName(rawName: string): string {
@@ -100,11 +115,39 @@ let iconsDataArray: IconData[] = Object.entries(filteredIconModules).map(([path,
   };
 }).sort((a, b) => a.name.localeCompare(b.name));
 
-// Fonction pour "masquer" une icône en la déplaçant vers le dossier hidden
-export const hideIcon = (iconName: string): void => {
-  console.log(`Pour masquer "${iconName}", déplacez le fichier SVG dans un dossier "hidden" dans src/icons/`);
-  // Note: En environnement GitHub Pages, on ne peut que supprimer côté client
+// Fonction pour "masquer" une icône de manière persistante
+export const hideIcon = async (iconName: string): Promise<void> => {
+  // Ajouter l'icône à la liste des masquées
+  const newHiddenConfig = {
+    hiddenIcons: [...hiddenIconsConfig.hiddenIcons, iconName],
+    lastUpdated: new Date().toISOString()
+  };
+  
+  // Mettre à jour la configuration locale
+  (hiddenIconsConfig as any).hiddenIcons.push(iconName);
+  (hiddenIconsConfig as any).lastUpdated = newHiddenConfig.lastUpdated;
+  
+  // Supprimer de la liste affichée
   iconsDataArray = iconsDataArray.filter(icon => icon.name !== iconName);
+  
+  // Instructions pour l'utilisateur
+  console.log(`Pour masquer définitivement "${iconName}", ajoutez-le dans src/data/hidden-icons.json:`);
+  console.log(JSON.stringify(newHiddenConfig, null, 2));
+};
+
+// Fonction pour rendre visible une icône masquée
+export const unhideIcon = async (iconName: string): Promise<void> => {
+  const newHiddenConfig = {
+    hiddenIcons: hiddenIconsConfig.hiddenIcons.filter(name => name !== iconName),
+    lastUpdated: new Date().toISOString()
+  };
+  
+  // Mettre à jour la configuration locale
+  (hiddenIconsConfig as any).hiddenIcons = newHiddenConfig.hiddenIcons;
+  (hiddenIconsConfig as any).lastUpdated = newHiddenConfig.lastUpdated;
+  
+  console.log(`Pour rendre visible "${iconName}", mettez à jour src/data/hidden-icons.json:`);
+  console.log(JSON.stringify(newHiddenConfig, null, 2));
 };
 
 // Fonction pour supprimer une icône (temporaire côté client)
