@@ -46,36 +46,6 @@ export const IconCard = ({
     // Créer un ID unique basé sur le nom de l'icône
     const uniqueId = name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
     
-    // Pour les icônes avec des gradients ou des couleurs complexes, traitement minimal
-    const hasComplexColors = svgContent.includes('gradient') || svgContent.includes('stop-color') || svgContent.includes('linearGradient') || svgContent.includes('radialGradient');
-    
-    if (hasComplexColors) {
-      // Traitement ultra-minimal pour préserver les gradients complexes
-      let cleaned = svgContent
-        // Supprimer seulement les déclarations XML
-        .replace(/<\?xml[^>]*\?>/g, '')
-        // Supprimer les commentaires
-        .replace(/<!--[\s\S]*?-->/g, '')
-        // Nettoyer les espaces mais pas trop agressivement
-        .replace(/\s+/g, ' ')
-        .trim();
-
-      // Rendre les ID uniques de manière plus précise pour les gradients
-      const idMatches = [...cleaned.matchAll(/id="([^"]+)"/g)];
-      idMatches.forEach(match => {
-        const originalId = match[1];
-        const newId = `${uniqueId}_${originalId}`;
-        // Remplacer de façon précise pour éviter les conflits
-        cleaned = cleaned.replace(new RegExp(`\\bid="${originalId}"`, 'g'), `id="${newId}"`);
-        cleaned = cleaned.replace(new RegExp(`\\burl\\(#${originalId}\\)`, 'g'), `url(#${newId})`);
-        cleaned = cleaned.replace(new RegExp(`\\bhref="#${originalId}"`, 'g'), `href="#${newId}"`);
-        cleaned = cleaned.replace(new RegExp(`\\bxlink:href="#${originalId}"`, 'g'), `xlink:href="#${newId}"`);
-      });
-      
-      return cleaned;
-    }
-
-    // Traitement normal pour les autres icônes
     let cleaned = svgContent
       // Supprimer la déclaration XML
       .replace(/<\?xml[^>]*\?>/g, '')
@@ -121,51 +91,9 @@ export const IconCard = ({
       return hasProblematicColors || hasNoColors;
     };
 
-    // Ne pas appliquer le traitement currentColor aux icônes colorées
-    // Détecter si l'icône a des couleurs vives (pas seulement grises/noires/blanches)
-    const hasVividColors = /#[0-9a-fA-F]{6}/.test(cleaned) && 
-      !/#(000000|ffffff|333333|666666|999999|cccccc|f0f0f0|e0e0e0|d0d0d0)$/i.test(cleaned);
-    
-    // Préserver les icônes colorées telles quelles
-    if (hasVividColors) {
-      return cleaned;
-    }
-    
-    // Seulement traiter les icônes monochromes
-    const forceCurrentColor = (svg: string): string => {
-      let processed = svg;
-      
-      // Liste des couleurs problématiques (seulement les grises/noires/blanches)
-      const problematicColors = [
-        '#000000', '#000', '#333333', '#333', '#666666', '#666', '#999999', '#999', 
-        '#212121', '#424242', 'black', 'gray', 'grey',
-        '#ffffff', '#fff', 'white', '#f0f0f0', '#e0e0e0', '#d0d0d0', '#cccccc', '#ccc'
-      ];
-      
-      // Remplacer SEULEMENT les couleurs problématiques par currentColor
-      problematicColors.forEach(color => {
-        const fillRegex = new RegExp(`fill="${color}"`, 'gi');
-        const strokeRegex = new RegExp(`stroke="${color}"`, 'gi');
-        processed = processed.replace(fillRegex, 'fill="currentColor"');
-        processed = processed.replace(strokeRegex, 'stroke="currentColor"');
-      });
-      
-      // Cas spéciaux pour les paths sans couleur définie
-      if (!processed.includes('fill=') && processed.includes('<path')) {
-        processed = processed.replace(/<path([^>]*)>/g, '<path$1 fill="currentColor">');
-      }
-      
-      // Ajouter currentColor au SVG racine si pas de couleur définie
-      if (!processed.includes('fill=') && !processed.includes('stroke=')) {
-        processed = processed.replace(/<svg([^>]*)>/, '<svg$1 fill="currentColor">');
-      }
-
-      return processed;
-    };
-
-    if (isMonochromeIcon(cleaned)) {
-      cleaned = forceCurrentColor(cleaned);
-    }
+    // Supprimer les logs maintenant que je comprends le problème
+    // L'icône utilise déjà currentColor mais l'élément parent n'avait pas de couleur définie
+    // Le style inline color: hsl(var(--foreground)) résout le problème
     
     return cleaned;
   };
@@ -385,30 +313,25 @@ export const IconCard = ({
       <div className="relative flex items-center justify-center h-12 w-12 mx-auto mb-4">
         <div className="
           relative w-10 h-10 rounded-lg 
+          bg-gradient-to-br from-secondary to-muted
+          border border-border/40
           flex items-center justify-center
           transition-all duration-smooth
-          overflow-visible
+          group-hover:from-primary/15 group-hover:to-primary/8
+          group-hover:border-primary/30 group-hover:shadow-md group-hover:scale-105
+          shadow-sm
         ">
           <div 
             className="
               icon-container
               text-foreground group-hover:text-primary
               transition-colors duration-smooth 
-              w-full h-full flex items-center justify-center 
-              [&>svg]:max-w-full [&>svg]:max-h-full
-              [&>svg]:drop-shadow-sm [&>svg]:overflow-visible
+              w-6 h-6 flex items-center justify-center 
+              [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-6 [&>svg]:max-h-6
+              [&>svg]:drop-shadow-sm
             " 
             style={{ color: 'hsl(var(--foreground))' }}
-            dangerouslySetInnerHTML={{ __html: (() => {
-              const cleanedSvg = cleanSvg(svg);
-              if (name.includes('API Management')) {
-                console.log('=== FINAL SVG FOR RENDERING ===');
-                console.log('Full cleaned SVG:', cleanedSvg);
-                console.log('Contains c69aeb:', cleanedSvg.includes('c69aeb'));
-                console.log('Contains rect element:', cleanedSvg.includes('<rect'));
-              }
-              return cleanedSvg;
-            })() }} 
+            dangerouslySetInnerHTML={{ __html: cleanSvg(svg) }} 
           />
         </div>
       </div>
@@ -439,7 +362,7 @@ export const IconCard = ({
         isOpen={showPreviewModal}
         onClose={() => setShowPreviewModal(false)}
         name={name}
-        originalSvg={svg}
+        originalSvg={cleanSvg(svg)}
       />
     </div>
   );

@@ -186,42 +186,53 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
     setColors(resetColors);
   };
 
-  // Fonction pour ajuster la taille du SVG - Préserver le viewBox original
+  // Fonction pour ajuster la taille du SVG
   const getSizedSvg = (svgString: string, size: number) => {
     let sizedSvg = svgString;
     
-    // 1. Supprimer tous les attributs width et height existants
-    sizedSvg = sizedSvg.replace(/\s*width="[^"]*"/g, '');
-    sizedSvg = sizedSvg.replace(/\s*height="[^"]*"/g, '');
+    // 1. Remplacer les attributs width et height existants
+    sizedSvg = sizedSvg.replace(/width="[^"]*"/g, `width="${size}"`);
+    sizedSvg = sizedSvg.replace(/height="[^"]*"/g, `height="${size}"`);
     
-    // 2. Forcer les nouvelles dimensions directement dans la balise SVG
-    sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 width="${size}" height="${size}" style="width: ${size}px; height: ${size}px;">`);
+    // 2. Si pas d'attributs width/height, les ajouter
+    if (!sizedSvg.includes('width=')) {
+      sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 width="${size}">`);
+    }
+    if (!sizedSvg.includes('height=')) {
+      sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 height="${size}">`);
+    }
     
-    // 3. Préserver le viewBox existant ou essayer de le déduire des dimensions originales
-    if (!sizedSvg.includes('viewBox=')) {
-      // Essayer de déduire le viewBox des dimensions originales
+    // 3. Gérer les viewBox pour s'assurer que l'icône s'adapte correctement
+    if (sizedSvg.includes('viewBox=')) {
+      // Si un viewBox existe, s'assurer qu'il est cohérent
+      const viewBoxMatch = sizedSvg.match(/viewBox="([^"]+)"/);
+      if (viewBoxMatch) {
+        const [, viewBoxValue] = viewBoxMatch;
+        const viewBoxParts = viewBoxValue.split(/\s+/);
+        if (viewBoxParts.length === 4) {
+          // Garder le viewBox original pour préserver les proportions
+          // mais s'assurer que width et height sont définis
+        }
+      }
+    } else {
+      // Si pas de viewBox, en ajouter un basé sur la taille originale ou utiliser 0 0 24 24 par défaut
       const originalWidthMatch = svgString.match(/width="([^"]+)"/);
       const originalHeightMatch = svgString.match(/height="([^"]+)"/);
       
-      let viewBoxWidth = 24;
-      let viewBoxHeight = 24;
-      
       if (originalWidthMatch && originalHeightMatch) {
-        const origW = parseFloat(originalWidthMatch[1]);
-        const origH = parseFloat(originalHeightMatch[1]);
-        if (!isNaN(origW) && !isNaN(origH)) {
-          viewBoxWidth = origW;
-          viewBoxHeight = origH;
+        const origW = originalWidthMatch[1];
+        const origH = originalHeightMatch[1];
+        // Extraire les valeurs numériques
+        const wNum = parseFloat(origW);
+        const hNum = parseFloat(origH);
+        if (!isNaN(wNum) && !isNaN(hNum)) {
+          sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 viewBox="0 0 ${wNum} ${hNum}">`);
         }
+      } else {
+        // Fallback: utiliser une viewBox standard
+        sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 viewBox="0 0 24 24">`);
       }
-      
-      sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 viewBox="0 0 ${viewBoxWidth} ${viewBoxHeight}">`);
     }
-    
-    // 4. S'assurer qu'aucun style inline ne limite la taille
-    sizedSvg = sizedSvg.replace(/style="[^"]*width:[^;"]*;?[^"]*"/g, (match) => {
-      return match.replace(/width:[^;"]*;?/, '').replace(/height:[^;"]*;?/, '');
-    });
     
     return sizedSvg;
   };
@@ -306,13 +317,9 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
             <div className="p-8 border border-border rounded-lg bg-background flex items-center justify-center">
               <div 
                 key={`main-${svgKey}`}
-                className="flex items-center justify-center text-foreground"
-                style={{ 
-                  width: `${iconSize}px`, 
-                  height: `${iconSize}px`,
-                  color: 'hsl(var(--foreground))'
-                }}
-                dangerouslySetInnerHTML={{ __html: getSizedSvg(modifiedSvg, iconSize) }}
+                className="[&>svg]:w-full [&>svg]:h-full text-foreground"
+                style={{ width: iconSize, height: iconSize, color: 'hsl(var(--foreground))' }}
+                dangerouslySetInnerHTML={{ __html: modifiedSvg }}
               />
             </div>
             
