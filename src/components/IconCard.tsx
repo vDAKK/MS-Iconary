@@ -91,46 +91,9 @@ export const IconCard = ({
       return hasProblematicColors || hasNoColors;
     };
 
-    // SOLUTION SIMPLIFIÉE : Forcer currentColor pour toutes les icônes avec des couleurs problématiques
-    const forceCurrentColor = (svg: string): string => {
-      let processed = svg;
-      
-      // Liste exhaustive des couleurs problématiques
-      const problematicColors = [
-        '#000000', '#000', '#333333', '#333', '#666666', '#666', '#999999', '#999', 
-        '#212121', '#424242', 'black', 'gray', 'grey',
-        '#ffffff', '#fff', 'white', '#f0f0f0', '#e0e0e0', '#d0d0d0', '#cccccc', '#ccc'
-      ];
-      
-      // Debugging: log le SVG original et le nom
-      console.log(`Processing icon: ${name}`, svg.substring(0, 200));
-      
-      // Remplacer TOUS les fills et strokes problématiques par currentColor
-      problematicColors.forEach(color => {
-        const fillRegex = new RegExp(`fill="${color}"`, 'gi');
-        const strokeRegex = new RegExp(`stroke="${color}"`, 'gi');
-        processed = processed.replace(fillRegex, 'fill="currentColor"');
-        processed = processed.replace(strokeRegex, 'stroke="currentColor"');
-      });
-      
-      // Cas spéciaux pour les paths sans couleur définie
-      if (!processed.includes('fill=') && processed.includes('<path')) {
-        processed = processed.replace(/<path([^>]*)>/g, '<path$1 fill="currentColor">');
-        console.log(`Added fill to paths for: ${name}`);
-      }
-      
-      // Ajouter currentColor au SVG racine si pas de couleur définie
-      if (!processed.includes('fill=') && !processed.includes('stroke=')) {
-        processed = processed.replace(/<svg([^>]*)>/, '<svg$1 fill="currentColor">');
-        console.log(`Added fill to SVG root for: ${name}`);
-      }
-      
-      console.log(`Processed result for ${name}:`, processed.substring(0, 200));
-      return processed;
-    };
-
-    // Appliquer le traitement à TOUTES les icônes (pas seulement monochromes)
-    cleaned = forceCurrentColor(cleaned);
+    // Supprimer les logs maintenant que je comprends le problème
+    // L'icône utilise déjà currentColor mais l'élément parent n'avait pas de couleur définie
+    // Le style inline color: hsl(var(--foreground)) résout le problème
     
     return cleaned;
   };
@@ -361,11 +324,13 @@ export const IconCard = ({
           <div 
             className="
               icon-container
+              text-foreground group-hover:text-primary
               transition-colors duration-smooth 
               w-6 h-6 flex items-center justify-center 
               [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-6 [&>svg]:max-h-6
               [&>svg]:drop-shadow-sm
             " 
+            style={{ color: 'hsl(var(--foreground))' }}
             dangerouslySetInnerHTML={{ __html: cleanSvg(svg) }} 
           />
         </div>
