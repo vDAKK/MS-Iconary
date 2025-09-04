@@ -399,7 +399,16 @@ export const IconCard = ({
               [&>svg]:drop-shadow-sm [&>svg]:overflow-visible
             " 
             style={{ color: 'hsl(var(--foreground))' }}
-            dangerouslySetInnerHTML={{ __html: cleanSvg(svg) }} 
+            dangerouslySetInnerHTML={{ __html: (() => {
+              const cleanedSvg = cleanSvg(svg);
+              if (name.includes('API Management')) {
+                console.log('=== FINAL SVG FOR RENDERING ===');
+                console.log('Full cleaned SVG:', cleanedSvg);
+                console.log('Contains c69aeb:', cleanedSvg.includes('c69aeb'));
+                console.log('Contains rect element:', cleanedSvg.includes('<rect'));
+              }
+              return cleanedSvg;
+            })() }} 
           />
         </div>
       </div>
