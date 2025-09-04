@@ -107,24 +107,42 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
     let updated = originalSvg;
     Object.entries(colors).forEach(([original, newColor]) => {
       if (original !== newColor) {
+        console.log(`Replacing color: ${original} → ${newColor}`);
+        
         // Échapper les caractères spéciaux pour les regex, mais pas les parenthèses et virgules pour les couleurs RGB/HSL
         const escapedOriginal = original.replace(/[.*+?^${}|[\]\\]/g, '\\$&');
         
-        // Remplacer dans les attributs fill et stroke
-        const attributeRegex = new RegExp(`(fill|stroke)="${escapedOriginal}"`, 'g');
+        // 1. Remplacer dans les attributs fill et stroke
+        const attributeRegex = new RegExp(`(fill|stroke)="${escapedOriginal}"`, 'gi');
+        const beforeAttribute = updated;
         updated = updated.replace(attributeRegex, `$1="${newColor}"`);
+        if (beforeAttribute !== updated) console.log('Replaced in attributes');
         
-        // Remplacer dans les attributs style
-        const styleRegex = new RegExp(`((?:fill|stroke):\\s*)${escapedOriginal}([;"])`, 'g');
+        // 2. Remplacer dans les attributs style
+        const styleRegex = new RegExp(`((?:fill|stroke):\\s*)${escapedOriginal}([;"])`, 'gi');
+        const beforeStyle = updated;
         updated = updated.replace(styleRegex, `$1${newColor}$2`);
+        if (beforeStyle !== updated) console.log('Replaced in style attributes');
         
-        // Remplacer dans stop-color
-        const stopRegex = new RegExp(`(stop-color)="${escapedOriginal}"`, 'g');
+        // 3. Remplacer dans stop-color pour les gradients
+        const stopRegex = new RegExp(`(stop-color)="${escapedOriginal}"`, 'gi');
+        const beforeStop = updated;
         updated = updated.replace(stopRegex, `$1="${newColor}"`);
+        if (beforeStop !== updated) console.log('Replaced in stop-color');
         
-        // Gérer les couleurs sans guillemets dans les styles
-        const styleNoQuoteRegex = new RegExp(`((?:fill|stroke):\\s*)${escapedOriginal}(\\s|;|$)`, 'g');
+        // 4. Gérer les couleurs sans guillemets dans les styles
+        const styleNoQuoteRegex = new RegExp(`((?:fill|stroke):\\s*)${escapedOriginal}(\\s|;|$)`, 'gi');
+        const beforeNoQuote = updated;
         updated = updated.replace(styleNoQuoteRegex, `$1${newColor}$2`);
+        if (beforeNoQuote !== updated) console.log('Replaced in unquoted styles');
+        
+        // 5. Remplacer dans les définitions CSS (si présentes)
+        const cssRegex = new RegExp(`(\\.|#[\\w-]+\\s*{[^}]*(?:fill|stroke):\\s*)${escapedOriginal}([^}]*})`, 'gi');
+        const beforeCSS = updated;
+        updated = updated.replace(cssRegex, `$1${newColor}$2`);
+        if (beforeCSS !== updated) console.log('Replaced in CSS definitions');
+        
+        console.log('Final updated SVG contains new color:', updated.includes(newColor));
       }
     });
     setModifiedSvg(updated);
