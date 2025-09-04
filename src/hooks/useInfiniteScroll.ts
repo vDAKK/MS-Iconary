@@ -49,29 +49,8 @@ export const useInfiniteScroll = <T>(
       }
 
       setIsLoading(false);
-    }, 150); // Petit délai pour éviter le spam
+    }, 150);
   }, [items, page, itemsPerPage, isLoading, hasMore]);
-
-  // Détection du scroll
-  useEffect(() => {
-    const handleScroll = () => {
-      if (isLoading || !hasMore) return;
-
-      const scrollTop = window.pageYOffset;
-      const windowHeight = window.innerHeight;
-      const docHeight = document.documentElement.offsetHeight;
-
-      // Utiliser un threshold plus petit pour laisser plus d'espace au footer
-      const adjustedThreshold = Math.min(threshold, 150);
-      
-      if (scrollTop + windowHeight >= docHeight - adjustedThreshold) {
-        loadMore();
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [loadMore, isLoading, hasMore, threshold]);
 
   const reset = useCallback(() => {
     const initialItems = items.slice(0, initialItemsPerPage);
