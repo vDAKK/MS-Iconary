@@ -11,8 +11,8 @@ export const HiddenIconsManager = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { toast } = useToast();
 
-  const handleUnhide = async (iconName: string) => {
-    await unhideIcon(iconName);
+  const handleUnhide = async (filePath: string) => {
+    await unhideIcon(filePath);
     toast({
       title: "Icône rendue visible",
       description: `Consultez la console pour mettre à jour le fichier hidden-icons.json dans GitHub.`,
@@ -52,19 +52,23 @@ export const HiddenIconsManager = () => {
             <p className="text-muted-foreground text-sm">Aucune icône masquée</p>
           ) : (
             <div className="space-y-2">
-              {hiddenIconsConfig.hiddenIcons.map((iconName) => (
-                <div key={iconName} className="flex items-center justify-between p-2 border rounded">
-                  <span className="text-sm">{iconName}</span>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => handleUnhide(iconName)}
-                    title="Rendre visible"
-                  >
-                    <Eye className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
+              {hiddenIconsConfig.hiddenIcons.map((filePath) => {
+                // Extraire le nom du fichier pour l'affichage
+                const fileName = filePath.split('/').pop()?.replace('.svg', '') || filePath;
+                return (
+                  <div key={filePath} className="flex items-center justify-between p-2 border rounded">
+                    <span className="text-sm" title={filePath}>{fileName}</span>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleUnhide(filePath)}
+                      title="Rendre visible"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                  </div>
+                );
+              })}
             </div>
           )}
           

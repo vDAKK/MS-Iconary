@@ -8,14 +8,16 @@ import { hideIcon } from '@/data/icons';
 interface IconCardProps {
   name: string;
   svg: string;
+  filePath: string; // Ajout du chemin de fichier
   isAdminMode?: boolean;
-  onDelete?: (name: string) => void;
+  onDelete?: (filePath: string) => void;
   className?: string;
   style?: React.CSSProperties;
 }
 export const IconCard = ({
   name,
   svg,
+  filePath,
   isAdminMode = false,
   onDelete,
   className = '',
@@ -101,7 +103,7 @@ export const IconCard = ({
 
   const confirmDelete = () => {
     if (onDelete) {
-      onDelete(name);
+      onDelete(filePath);
       toast({
         title: "Icône supprimée",
         description: `L'icône "${name}" a été supprimée temporairement.`,
@@ -112,7 +114,7 @@ export const IconCard = ({
 
   const confirmHide = async () => {
     try {
-      await hideIcon(name);
+      await hideIcon(filePath);
       toast({
         title: "Icône masquée", 
         description: `L'icône "${name}" a été masquée. Consultez la console pour la configuration à committer dans GitHub.`,

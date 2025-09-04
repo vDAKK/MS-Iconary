@@ -3,10 +3,11 @@ export interface IconData {
   svg: string;
   category?: string;
   keywords?: string[];
+  filePath?: string; // Ajout du chemin de fichier pour identification unique
 }
 
 export interface HiddenIconsConfig {
-  hiddenIcons: string[];
+  hiddenIcons: string[]; // Maintenant basé sur les chemins de fichiers
   lastUpdated: string;
 }
 
@@ -26,9 +27,8 @@ const filteredIconModules = Object.fromEntries(
     // Exclude hidden folders
     if (path.includes('/hidden/')) return false;
     
-    // Exclude icons listed in hidden-icons.json
-    const iconName = extractIconName(path);
-    return !hiddenIconsConfig.hiddenIcons.includes(iconName);
+    // Exclude icons listed in hidden-icons.json (based on file path)
+    return !hiddenIconsConfig.hiddenIcons.includes(path);
   })
 );
 
@@ -111,34 +111,35 @@ let iconsDataArray: IconData[] = Object.entries(filteredIconModules).map(([path,
     name,
     category,
     svg: content as string,
-    keywords: generateKeywords(name, category)
+    keywords: generateKeywords(name, category),
+    filePath: path // Stocker le chemin pour identification unique
   };
 }).sort((a, b) => a.name.localeCompare(b.name));
 
 // Fonction pour "masquer" une icône de manière persistante
-export const hideIcon = async (iconName: string): Promise<void> => {
-  // Ajouter l'icône à la liste des masquées
+export const hideIcon = async (filePath: string): Promise<void> => {
+  // Ajouter le chemin de fichier à la liste des masquées
   const newHiddenConfig = {
-    hiddenIcons: [...hiddenIconsConfig.hiddenIcons, iconName],
+    hiddenIcons: [...hiddenIconsConfig.hiddenIcons, filePath],
     lastUpdated: new Date().toISOString()
   };
   
   // Mettre à jour la configuration locale
-  (hiddenIconsConfig as any).hiddenIcons.push(iconName);
+  (hiddenIconsConfig as any).hiddenIcons.push(filePath);
   (hiddenIconsConfig as any).lastUpdated = newHiddenConfig.lastUpdated;
   
   // Supprimer de la liste affichée
-  iconsDataArray = iconsDataArray.filter(icon => icon.name !== iconName);
+  iconsDataArray = iconsDataArray.filter(icon => icon.filePath !== filePath);
   
   // Instructions pour l'utilisateur
-  console.log(`Pour masquer définitivement "${iconName}", ajoutez-le dans src/data/hidden-icons.json:`);
+  console.log(`Pour masquer définitivement l'icône "${filePath}", mettez à jour src/data/hidden-icons.json:`);
   console.log(JSON.stringify(newHiddenConfig, null, 2));
 };
 
 // Fonction pour rendre visible une icône masquée
-export const unhideIcon = async (iconName: string): Promise<void> => {
+export const unhideIcon = async (filePath: string): Promise<void> => {
   const newHiddenConfig = {
-    hiddenIcons: hiddenIconsConfig.hiddenIcons.filter(name => name !== iconName),
+    hiddenIcons: hiddenIconsConfig.hiddenIcons.filter(path => path !== filePath),
     lastUpdated: new Date().toISOString()
   };
   
@@ -146,13 +147,13 @@ export const unhideIcon = async (iconName: string): Promise<void> => {
   (hiddenIconsConfig as any).hiddenIcons = newHiddenConfig.hiddenIcons;
   (hiddenIconsConfig as any).lastUpdated = newHiddenConfig.lastUpdated;
   
-  console.log(`Pour rendre visible "${iconName}", mettez à jour src/data/hidden-icons.json:`);
+  console.log(`Pour rendre visible l'icône "${filePath}", mettez à jour src/data/hidden-icons.json:`);
   console.log(JSON.stringify(newHiddenConfig, null, 2));
 };
 
 // Fonction pour supprimer une icône (temporaire côté client)
-export const deleteIcon = (iconName: string): void => {
-  iconsDataArray = iconsDataArray.filter(icon => icon.name !== iconName);
+export const deleteIcon = (filePath: string): void => {
+  iconsDataArray = iconsDataArray.filter(icon => icon.filePath !== filePath);
 };
 
 // Export de la liste d'icônes
