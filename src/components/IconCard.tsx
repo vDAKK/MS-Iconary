@@ -431,7 +431,7 @@ export const IconCard = ({
         isOpen={showPreviewModal}
         onClose={() => setShowPreviewModal(false)}
         name={name}
-        originalSvg={cleanSvg(svg)}
+        originalSvg={svg}
       />
     </div>
   );
