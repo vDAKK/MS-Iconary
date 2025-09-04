@@ -186,7 +186,7 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
     setColors(resetColors);
   };
 
-  // Fonction pour ajuster la taille du SVG - Force les dimensions dans le markup SVG
+  // Fonction pour ajuster la taille du SVG - Préserver le viewBox original
   const getSizedSvg = (svgString: string, size: number) => {
     let sizedSvg = svgString;
     
@@ -197,9 +197,25 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
     // 2. Forcer les nouvelles dimensions directement dans la balise SVG
     sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 width="${size}" height="${size}" style="width: ${size}px; height: ${size}px;">`);
     
-    // 3. Ajouter un viewBox si il n'existe pas pour garantir le scaling
+    // 3. Préserver le viewBox existant ou essayer de le déduire des dimensions originales
     if (!sizedSvg.includes('viewBox=')) {
-      sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 viewBox="0 0 24 24">`);
+      // Essayer de déduire le viewBox des dimensions originales
+      const originalWidthMatch = svgString.match(/width="([^"]+)"/);
+      const originalHeightMatch = svgString.match(/height="([^"]+)"/);
+      
+      let viewBoxWidth = 24;
+      let viewBoxHeight = 24;
+      
+      if (originalWidthMatch && originalHeightMatch) {
+        const origW = parseFloat(originalWidthMatch[1]);
+        const origH = parseFloat(originalHeightMatch[1]);
+        if (!isNaN(origW) && !isNaN(origH)) {
+          viewBoxWidth = origW;
+          viewBoxHeight = origH;
+        }
+      }
+      
+      sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 viewBox="0 0 ${viewBoxWidth} ${viewBoxHeight}">`);
     }
     
     // 4. S'assurer qu'aucun style inline ne limite la taille
