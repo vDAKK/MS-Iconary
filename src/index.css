@@ -195,6 +195,35 @@ All colors MUST be HSL.
   .animate-scale-in {
     animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
   }
+
+  /* Amélioration de la visibilité pour les icônes monocouleurs problématiques */
+  .icon-container {
+    /* Forcer une couleur visible pour les SVG monocouleurs sans couleur définie */
+    color: hsl(var(--foreground));
+  }
+  
+  .icon-container svg[fill="none"]:not([stroke]),
+  .icon-container svg:not([fill]):not([stroke]) {
+    /* Icônes sans couleur définie - utiliser la couleur du texte */
+    color: hsl(var(--foreground));
+  }
+  
+  .icon-container svg[fill="#000000"],
+  .icon-container svg[fill="#000"] {
+    /* Icônes noires en mode clair */
+    fill: hsl(var(--foreground)) !important;
+  }
+  
+  .dark .icon-container svg[fill="#ffffff"],
+  .dark .icon-container svg[fill="#fff"] {
+    /* Icônes blanches en mode sombre */
+    fill: hsl(var(--foreground)) !important;
+  }
+  
+  .icon-container svg[fill="currentColor"] {
+    /* Icônes utilisant currentColor */
+    color: hsl(var(--foreground));
+  }
 }
 
 /* Keyframes */
