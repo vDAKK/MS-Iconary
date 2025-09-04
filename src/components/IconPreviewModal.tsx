@@ -107,7 +107,8 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
     let updated = originalSvg;
     Object.entries(colors).forEach(([original, newColor]) => {
       if (original !== newColor) {
-        const escapedOriginal = original.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        // Échapper les caractères spéciaux pour les regex, mais pas les parenthèses et virgules pour les couleurs RGB/HSL
+        const escapedOriginal = original.replace(/[.*+?^${}|[\]\\]/g, '\\$&');
         
         // Remplacer dans les attributs fill et stroke
         const attributeRegex = new RegExp(`(fill|stroke)="${escapedOriginal}"`, 'g');
@@ -120,6 +121,10 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
         // Remplacer dans stop-color
         const stopRegex = new RegExp(`(stop-color)="${escapedOriginal}"`, 'g');
         updated = updated.replace(stopRegex, `$1="${newColor}"`);
+        
+        // Gérer les couleurs sans guillemets dans les styles
+        const styleNoQuoteRegex = new RegExp(`((?:fill|stroke):\\s*)${escapedOriginal}(\\s|;|$)`, 'g');
+        updated = updated.replace(styleNoQuoteRegex, `$1${newColor}$2`);
       }
     });
     setModifiedSvg(updated);
