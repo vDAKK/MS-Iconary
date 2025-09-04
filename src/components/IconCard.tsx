@@ -46,6 +46,36 @@ export const IconCard = ({
     // Créer un ID unique basé sur le nom de l'icône
     const uniqueId = name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
     
+    // Pour les icônes avec des gradients ou des couleurs complexes, traitement minimal
+    const hasComplexColors = svgContent.includes('gradient') || svgContent.includes('stop-color') || svgContent.includes('linearGradient') || svgContent.includes('radialGradient');
+    
+    if (hasComplexColors) {
+      // Traitement ultra-minimal pour préserver les gradients complexes
+      let cleaned = svgContent
+        // Supprimer seulement les déclarations XML
+        .replace(/<\?xml[^>]*\?>/g, '')
+        // Supprimer les commentaires
+        .replace(/<!--[\s\S]*?-->/g, '')
+        // Nettoyer les espaces mais pas trop agressivement
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      // Rendre les ID uniques de manière plus précise pour les gradients
+      const idMatches = [...cleaned.matchAll(/id="([^"]+)"/g)];
+      idMatches.forEach(match => {
+        const originalId = match[1];
+        const newId = `${uniqueId}_${originalId}`;
+        // Remplacer de façon précise pour éviter les conflits
+        cleaned = cleaned.replace(new RegExp(`\\bid="${originalId}"`, 'g'), `id="${newId}"`);
+        cleaned = cleaned.replace(new RegExp(`\\burl\\(#${originalId}\\)`, 'g'), `url(#${newId})`);
+        cleaned = cleaned.replace(new RegExp(`\\bhref="#${originalId}"`, 'g'), `href="#${newId}"`);
+        cleaned = cleaned.replace(new RegExp(`\\bxlink:href="#${originalId}"`, 'g'), `xlink:href="#${newId}"`);
+      });
+      
+      return cleaned;
+    }
+
+    // Traitement normal pour les autres icônes
     let cleaned = svgContent
       // Supprimer la déclaration XML
       .replace(/<\?xml[^>]*\?>/g, '')
