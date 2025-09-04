@@ -46,22 +46,10 @@ export const IconCard = ({
     // Créer un ID unique basé sur le nom de l'icône
     const uniqueId = name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
     
-    // Debug pour API Management Services
-    if (name.includes('API Management')) {
-      console.log(`=== DEBUG ${name} ===`);
-      console.log('Original SVG length:', svgContent.length);
-      console.log('Contains c69aeb:', svgContent.includes('c69aeb'));
-      console.log('Contains 6f4bb2:', svgContent.includes('6f4bb2'));
-      console.log('Contains f9b1bb8c gradient:', svgContent.includes('f9b1bb8c'));
-      console.log('Original SVG:', svgContent.substring(0, 500));
-    }
-    
     // Pour les icônes avec des gradients ou des couleurs complexes, traitement minimal
     const hasComplexColors = svgContent.includes('gradient') || svgContent.includes('stop-color') || svgContent.includes('linearGradient') || svgContent.includes('radialGradient');
     
     if (hasComplexColors) {
-      console.log(`Complex colors detected for ${name}, using minimal processing`);
-      
       // Traitement ultra-minimal pour préserver les gradients complexes
       let cleaned = svgContent
         // Supprimer seulement les déclarations XML
@@ -83,15 +71,6 @@ export const IconCard = ({
         cleaned = cleaned.replace(new RegExp(`\\bhref="#${originalId}"`, 'g'), `href="#${newId}"`);
         cleaned = cleaned.replace(new RegExp(`\\bxlink:href="#${originalId}"`, 'g'), `xlink:href="#${newId}"`);
       });
-      
-      // Debug pour API Management Services après nettoyage
-      if (name.includes('API Management')) {
-        console.log('Cleaned SVG length:', cleaned.length);
-        console.log('Still contains c69aeb:', cleaned.includes('c69aeb'));
-        console.log('Still contains 6f4bb2:', cleaned.includes('6f4bb2'));
-        console.log('Still contains f9b1bb8c gradient:', cleaned.includes('f9b1bb8c'));
-        console.log('Cleaned SVG:', cleaned.substring(0, 500));
-      }
       
       return cleaned;
     }
@@ -416,9 +395,8 @@ export const IconCard = ({
               text-foreground group-hover:text-primary
               transition-colors duration-smooth 
               w-full h-full flex items-center justify-center 
-              [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-none [&>svg]:max-h-none
+              [&>svg]:max-w-full [&>svg]:max-h-full
               [&>svg]:drop-shadow-sm [&>svg]:overflow-visible
-              [&>svg]:object-contain [&>svg]:object-center
             " 
             style={{ color: 'hsl(var(--foreground))' }}
             dangerouslySetInnerHTML={{ __html: cleanSvg(svg) }} 
