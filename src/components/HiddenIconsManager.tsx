@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Eye, EyeOff, Download } from "lucide-react";
 import { unhideIcon } from "@/data/icons";
 import { useToast } from "@/hooks/use-toast";
@@ -39,7 +40,7 @@ export const HiddenIconsManager = () => {
           Icônes masquées ({hiddenIconsConfig.hiddenIcons.length})
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md max-h-[80vh]">
         <DialogHeader>
           <DialogTitle>Icônes masquées</DialogTitle>
           <DialogDescription>
@@ -47,29 +48,31 @@ export const HiddenIconsManager = () => {
           </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-4">
+        <div className="space-y-4 flex flex-col min-h-0">
           {hiddenIconsConfig.hiddenIcons.length === 0 ? (
             <p className="text-muted-foreground text-sm">Aucune icône masquée</p>
           ) : (
-            <div className="space-y-2">
-              {hiddenIconsConfig.hiddenIcons.map((filePath) => {
-                // Extraire le nom du fichier pour l'affichage
-                const fileName = filePath.split('/').pop()?.replace('.svg', '') || filePath;
-                return (
-                  <div key={filePath} className="flex items-center justify-between p-2 border rounded">
-                    <span className="text-sm" title={filePath}>{fileName}</span>
-                    <Button
-                      size="sm"
-                      variant="ghost"
-                      onClick={() => handleUnhide(filePath)}
-                      title="Rendre visible"
-                    >
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                  </div>
-                );
-              })}
-            </div>
+            <ScrollArea className="flex-1 max-h-[400px]">
+              <div className="space-y-2 pr-4">
+                {hiddenIconsConfig.hiddenIcons.map((filePath) => {
+                  // Extraire le nom du fichier pour l'affichage
+                  const fileName = filePath.split('/').pop()?.replace('.svg', '') || filePath;
+                  return (
+                    <div key={filePath} className="flex items-center justify-between p-2 border rounded">
+                      <span className="text-sm" title={filePath}>{fileName}</span>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => handleUnhide(filePath)}
+                        title="Rendre visible"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  );
+                })}
+              </div>
+            </ScrollArea>
           )}
           
           <div className="flex gap-2 pt-4 border-t">
