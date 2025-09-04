@@ -139,7 +139,7 @@ const Index = () => {
     
   const seoDescription = searchQuery
     ? `Découvrez ${processedIcons.length} icône${processedIcons.length > 1 ? 's' : ''} Microsoft pour "${searchQuery}". Copie d'image, code SVG et téléchargement en 1 clic.`
-    : "Collection premium d'icônes SVG Microsoft avec copie d'image, code SVG et téléchargement en 1 clic. Plus de 100 icônes Azure, Office, Teams optimisées pour développeurs.";
+    : "Collection premium d'icônes SVG Microsoft avec copie d'image, code SVG, téléchargement et personnalisation en 1 clic. Plus de 2000 icônes Azure, Office, Teams et autres optimisées pour développeurs.";
 
   const handleDeleteIcon = (filePath: string) => {
     deleteIcon(filePath);
@@ -185,9 +185,9 @@ const Index = () => {
               
               {/* Sous-titre */}
               <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed font-light">
-                Une collection soigneusement sélectionnée d'icônes SVG des outils Microsoft.
+                Les SVG comme vous ne les aviez jamais vus.
                 <br className="hidden md:block" />
-                <span className="text-primary font-medium">Cliquez pour copier en tant qu'image</span>, ou utilisez les actions pour le code SVG et le téléchargement.
+                <span className="text-primary font-medium">Cliquez pour copier en tant qu'image SVG</span>, ou utilisez les actions pour son code, le télécharger ou le personnaliser.
               </p>
               
               {/* Zone de recherche */}
@@ -342,7 +342,7 @@ const Index = () => {
               
               <div className="space-y-2">
                 <div className="text-xs text-muted-foreground/60">
-                  MS-Iconary • Copie d'image, code SVG et téléchargement
+                  MS-Iconary • Copie d'image, code SVG, téléchargement et personnalisation
                 </div>
                 <div className="text-xs text-muted-foreground/50">
                   Réalisé par{' '}
