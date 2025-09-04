@@ -1,7 +1,8 @@
 import { useClipboard } from '@/hooks/useClipboard';
-import { Check, Copy, Download, Code, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { Check, Copy, Download, Code, Trash2, Palette } from 'lucide-react';
+import { useState, useRef } from 'react';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
+import { IconPreviewModal } from './IconPreviewModal';
 import { useToast } from '@/hooks/use-toast';
 import { hideIcon } from '@/data/icons';
 
@@ -32,7 +33,9 @@ export const IconCard = ({
   const [isHovered, setIsHovered] = useState(false);
   const [showActions, setShowActions] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
   const { toast } = useToast();
+  const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Nettoyer le SVG en supprimant les déclarations XML, DOCTYPE, entités et commentaires
   const cleanSvg = (svgContent: string): string => {
@@ -131,12 +134,32 @@ export const IconCard = ({
     if ((e.target as HTMLElement).closest('button')) {
       return;
     }
-    console.log('Card click for:', name);
-    try {
-      await copyImageToClipboard(cleanSvg(svg), name);
-    } catch (error) {
-      console.error('Error copying image:', error);
+    
+    // Gérer le double-clic pour ouvrir la modal
+    if (clickTimeoutRef.current) {
+      clearTimeout(clickTimeoutRef.current);
+      clickTimeoutRef.current = null;
+      // Double-clic détecté - ouvrir la modal
+      setShowPreviewModal(true);
+      return;
     }
+    
+    // Premier clic - programmer la copie avec délai
+    clickTimeoutRef.current = setTimeout(async () => {
+      clickTimeoutRef.current = null;
+      console.log('Card click for:', name);
+      try {
+        await copyImageToClipboard(cleanSvg(svg), name);
+      } catch (error) {
+        console.error('Error copying image:', error);
+      }
+    }, 250);
+  };
+
+  const handleEditClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setShowPreviewModal(true);
   };
   return <div className={`
         relative group cursor-pointer rounded-xl p-6 
@@ -208,6 +231,16 @@ export const IconCard = ({
         <Download className="w-3.5 h-3.5 text-muted-foreground hover:text-primary" />
       </button>
 
+      {/* Bouton d'édition */}
+      <button onClick={handleEditClick} className="
+                p-1.5 rounded-lg glass backdrop-blur-sm
+                border border-border/30 hover:border-accent/50
+                hover:bg-accent/10 transition-all duration-smooth
+                animate-scale-in
+              " title="Personnaliser les couleurs">
+        <Palette className="w-3.5 h-3.5 text-muted-foreground hover:text-accent-foreground" />
+      </button>
+
       {/* Bouton de suppression en mode admin */}
       {isAdminMode && (
         <button 
@@ -237,6 +270,9 @@ export const IconCard = ({
 
     {/* Indicateur d'action principale */}
     <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-60 transition-opacity duration-smooth">
+      <div className="text-xs text-muted-foreground/70 bg-background/80 px-2 py-1 rounded border border-border/30 backdrop-blur-sm">
+        Clic = Copier • Double-clic = Éditer
+      </div>
     </div>
 
     <DeleteConfirmModal
@@ -245,6 +281,13 @@ export const IconCard = ({
       onConfirm={confirmDelete}
       onHide={confirmHide}
       iconName={name}
+    />
+
+    <IconPreviewModal
+      isOpen={showPreviewModal}
+      onClose={() => setShowPreviewModal(false)}
+      name={name}
+      originalSvg={cleanSvg(svg)}
     />
   </div>;
 };
