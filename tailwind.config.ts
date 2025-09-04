@@ -23,43 +23,43 @@ export default {
 				mono: ['JetBrains Mono', 'Menlo', 'monospace'],
 			},
 			colors: {
-				border: 'rgb(var(--border))',
-				input: 'rgb(var(--input))',
-				ring: 'rgb(var(--ring))',
-				background: 'rgb(var(--background))',
-				foreground: 'rgb(var(--foreground))',
+				border: 'hsl(var(--border))',
+				input: 'hsl(var(--input))',
+				ring: 'hsl(var(--ring))',
+				background: 'hsl(var(--background))',
+				foreground: 'hsl(var(--foreground))',
 				primary: {
-					DEFAULT: 'rgb(var(--primary))',
-					foreground: 'rgb(var(--primary-foreground))',
-					hover: 'rgb(var(--primary-hover))',
-					light: 'rgb(var(--primary-light))'
+					DEFAULT: 'hsl(var(--primary))',
+					foreground: 'hsl(var(--primary-foreground))',
+					hover: 'hsl(var(--primary-hover))',
+					light: 'hsl(var(--primary-light))'
 				},
 				secondary: {
-					DEFAULT: 'rgb(var(--secondary))',
-					foreground: 'rgb(var(--secondary-foreground))'
+					DEFAULT: 'hsl(var(--secondary))',
+					foreground: 'hsl(var(--secondary-foreground))'
 				},
 				destructive: {
-					DEFAULT: 'rgb(var(--destructive))',
-					foreground: 'rgb(var(--destructive-foreground))'
+					DEFAULT: 'hsl(var(--destructive))',
+					foreground: 'hsl(var(--destructive-foreground))'
 				},
 				muted: {
-					DEFAULT: 'rgb(var(--muted))',
-					foreground: 'rgb(var(--muted-foreground))'
+					DEFAULT: 'hsl(var(--muted))',
+					foreground: 'hsl(var(--muted-foreground))'
 				},
 				accent: {
-					DEFAULT: 'rgb(var(--accent))',
-					foreground: 'rgb(var(--accent-foreground))'
+					DEFAULT: 'hsl(var(--accent))',
+					foreground: 'hsl(var(--accent-foreground))'
 				},
 				popover: {
-					DEFAULT: 'rgb(var(--popover))',
-					foreground: 'rgb(var(--popover-foreground))'
+					DEFAULT: 'hsl(var(--popover))',
+					foreground: 'hsl(var(--popover-foreground))'
 				},
 				card: {
-					DEFAULT: 'rgb(var(--card))',
-					foreground: 'rgb(var(--card-foreground))'
+					DEFAULT: 'hsl(var(--card))',
+					foreground: 'hsl(var(--card-foreground))'
 				},
 				surface: {
-					elevated: 'rgb(var(--surface-elevated))',
+					elevated: 'hsl(var(--surface-elevated))',
 					glass: 'var(--surface-glass)'
 				},
 				sidebar: {

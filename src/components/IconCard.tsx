@@ -282,10 +282,24 @@ export const IconCard = ({
 
       {/* Icône SVG */}
       <div className="relative flex items-center justify-center h-12 w-12 mx-auto mb-4">
-        <div 
-          className="text-muted-foreground group-hover:text-primary transition-colors duration-smooth transform group-hover:scale-110 w-8 h-8 flex items-center justify-center [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-8 [&>svg]:max-h-8" 
-          dangerouslySetInnerHTML={{ __html: cleanSvg(svg) }} 
-        />
+        <div className="
+          relative w-10 h-10 rounded-lg bg-gradient-to-br from-muted/50 to-muted/20
+          flex items-center justify-center
+          transition-all duration-smooth
+          group-hover:from-primary/10 group-hover:to-primary/5
+          group-hover:shadow-md group-hover:scale-105
+        ">
+          <div 
+            className="
+              text-foreground/80 group-hover:text-primary 
+              transition-colors duration-smooth 
+              w-6 h-6 flex items-center justify-center 
+              [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-6 [&>svg]:max-h-6
+              [&>svg]:drop-shadow-sm
+            " 
+            dangerouslySetInnerHTML={{ __html: cleanSvg(svg) }} 
+          />
+        </div>
       </div>
 
       {/* Nom de l'icône */}
