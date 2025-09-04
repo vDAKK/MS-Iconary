@@ -209,20 +209,80 @@ All colors MUST be HSL.
   }
   
   .icon-container svg[fill="#000000"],
-  .icon-container svg[fill="#000"] {
-    /* Icônes noires en mode clair */
+  .icon-container svg[fill="#000"],
+  .icon-container svg[fill="#333333"],
+  .icon-container svg[fill="#333"],
+  .icon-container svg[fill="#666666"],
+  .icon-container svg[fill="#666"],
+  .icon-container svg[fill="#999999"],
+  .icon-container svg[fill="#999"],
+  .icon-container svg[fill="black"],
+  .icon-container svg[fill="gray"],
+  .icon-container svg[fill="grey"],
+  .icon-container svg[fill="#212121"],
+  .icon-container svg[fill="#424242"],
+  .icon-container svg path[fill="#000000"],
+  .icon-container svg path[fill="#000"],
+  .icon-container svg path[fill="#333333"],
+  .icon-container svg path[fill="#333"],
+  .icon-container svg path[fill="#666666"],
+  .icon-container svg path[fill="#666"],
+  .icon-container svg path[fill="#999999"],
+  .icon-container svg path[fill="#999"],
+  .icon-container svg path[fill="black"],
+  .icon-container svg path[fill="gray"],
+  .icon-container svg path[fill="grey"],
+  .icon-container svg path[fill="#212121"],
+  .icon-container svg path[fill="#424242"] {
+    /* Icônes sombres/grises en mode clair */
     fill: hsl(var(--foreground)) !important;
   }
   
   .dark .icon-container svg[fill="#ffffff"],
-  .dark .icon-container svg[fill="#fff"] {
-    /* Icônes blanches en mode sombre */
+  .dark .icon-container svg[fill="#fff"],
+  .dark .icon-container svg[fill="white"],
+  .dark .icon-container svg[fill="#f0f0f0"],
+  .dark .icon-container svg[fill="#e0e0e0"],
+  .dark .icon-container svg[fill="#d0d0d0"],
+  .dark .icon-container svg path[fill="#ffffff"],
+  .dark .icon-container svg path[fill="#fff"],
+  .dark .icon-container svg path[fill="white"],
+  .dark .icon-container svg path[fill="#f0f0f0"],
+  .dark .icon-container svg path[fill="#e0e0e0"],
+  .dark .icon-container svg path[fill="#d0d0d0"] {
+    /* Icônes claires en mode sombre */
     fill: hsl(var(--foreground)) !important;
   }
   
-  .icon-container svg[fill="currentColor"] {
+  .icon-container svg[fill="currentColor"],
+  .icon-container svg path[fill="currentColor"] {
     /* Icônes utilisant currentColor */
     color: hsl(var(--foreground));
+  }
+  
+  /* Pour les icônes avec stroke au lieu de fill */
+  .icon-container svg[stroke="#000000"],
+  .icon-container svg[stroke="#000"],
+  .icon-container svg[stroke="#333333"],
+  .icon-container svg[stroke="#333"],
+  .icon-container svg[stroke="#666666"],
+  .icon-container svg[stroke="#666"],
+  .icon-container svg path[stroke="#000000"],
+  .icon-container svg path[stroke="#000"],
+  .icon-container svg path[stroke="#333333"],
+  .icon-container svg path[stroke="#333"],
+  .icon-container svg path[stroke="#666666"],
+  .icon-container svg path[stroke="#666"] {
+    stroke: hsl(var(--foreground)) !important;
+  }
+  
+  .dark .icon-container svg[stroke="#ffffff"],
+  .dark .icon-container svg[stroke="#fff"],
+  .dark .icon-container svg[stroke="white"],
+  .dark .icon-container svg path[stroke="#ffffff"],
+  .dark .icon-container svg path[stroke="#fff"],
+  .dark .icon-container svg path[stroke="white"] {
+    stroke: hsl(var(--foreground)) !important;
   }
 }
 
