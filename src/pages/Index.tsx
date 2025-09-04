@@ -6,6 +6,7 @@ import { SEOHead } from '@/components/SEOHead';
 import { AdminPasswordModal } from '@/components/AdminPasswordModal';
 import { HiddenIconsManager } from '@/components/HiddenIconsManager';
 import { AdvancedFilters, FilterOptions } from '@/components/AdvancedFilters';
+import { ScrollToTop } from '@/components/ScrollToTop';
 import { iconsData, deleteIcon } from '@/data/icons';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
@@ -189,24 +190,20 @@ const Index = () => {
               </p>
               
               {/* Zone de recherche et filtres */}
-              <div className="flex items-center justify-center relative">
-                {/* Barre de recherche centrée */}
-                <div className="max-w-lg w-full">
-                  <SearchBar 
-                    value={searchQuery} 
-                    onChange={setSearchQuery}
-                    placeholder="Rechercher une icône..."
-                    className="w-full"
-                  />
-                </div>
-                {/* Bouton filtres positionné à 10px à gauche de la barre centrée */}
-                <div className="absolute right-1/2 mr-[calc(50%+10px)]">
+              <div className="flex items-center justify-center">
+                <div className="flex items-center gap-2.5">
                   <AdvancedFilters
                     filters={filters}
                     onFiltersChange={setFilters}
                     availableCategories={availableCategories}
                     favoritesCount={favoritesCount}
                     onClearFavorites={clearFavorites}
+                  />
+                  <SearchBar 
+                    value={searchQuery} 
+                    onChange={setSearchQuery}
+                    placeholder="Rechercher une icône..."
+                    className="max-w-lg"
                   />
                 </div>
               </div>
@@ -336,6 +333,9 @@ const Index = () => {
             </div>
           </div>
         </footer>
+
+        {/* Bouton scroll to top */}
+        <ScrollToTop />
 
         {/* Indicateur mode admin */}
         {isAdminMode && (
