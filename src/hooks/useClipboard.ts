@@ -32,10 +32,15 @@ export const useClipboard = () => {
   // Fonction pour copier une image SVG
   const copyImageToClipboard = async (svgString: string, iconName?: string) => {
     try {
+      // Vérifier si le navigateur supporte ClipboardItem
+      if (!window.ClipboardItem) {
+        throw new Error('ClipboardItem not supported');
+      }
+
       // Créer un blob SVG
       const svgBlob = new Blob([svgString], { type: 'image/svg+xml' });
 
-      // Copier dans le presse-papier
+      // Essayer de copier en tant qu'image SVG
       await navigator.clipboard.write([
         new ClipboardItem({
           'image/svg+xml': svgBlob
