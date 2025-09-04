@@ -1,5 +1,5 @@
 import { useClipboard } from '@/hooks/useClipboard';
-import { Check, Copy, Download, Code, Trash2, Palette } from 'lucide-react';
+import { Check, Copy, Download, Code, Trash2, Palette, Heart } from 'lucide-react';
 import { useState, useRef } from 'react';
 import { DeleteConfirmModal } from './DeleteConfirmModal';
 import { IconPreviewModal } from './IconPreviewModal';
@@ -14,6 +14,8 @@ interface IconCardProps {
   onDelete?: (filePath: string) => void;
   className?: string;
   style?: React.CSSProperties;
+  isFavorite?: boolean;
+  onToggleFavorite?: (name: string) => void;
 }
 export const IconCard = ({
   name,
@@ -22,7 +24,9 @@ export const IconCard = ({
   isAdminMode = false,
   onDelete,
   className = '',
-  style
+  style,
+  isFavorite = false,
+  onToggleFavorite
 }: IconCardProps) => {
   const {
     copyImageToClipboard,
@@ -161,6 +165,12 @@ export const IconCard = ({
     e.stopPropagation();
     setShowPreviewModal(true);
   };
+
+  const handleFavoriteToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    onToggleFavorite?.(name);
+  };
   return <div className={`
         relative group cursor-pointer rounded-xl p-6 
         glass border border-border/50
@@ -202,6 +212,19 @@ export const IconCard = ({
         transition-all duration-smooth transform
         ${isHovered ? 'translate-y-0' : 'translate-y-2'}
       `}>
+
+      {/* Bouton favoris */}
+      <button onClick={handleFavoriteToggle} className={`
+            p-1.5 rounded-lg glass backdrop-blur-sm
+            border border-border/30 hover:border-red-400/50
+            transition-all duration-smooth
+            ${isFavorite ? 'bg-red-100/20 border-red-400' : 'hover:bg-red-50/10'}
+          `} title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}>
+        <Heart className={`w-3.5 h-3.5 transition-all duration-smooth ${
+          isFavorite ? 'text-red-500 fill-red-500 scale-110' : 'text-muted-foreground group-hover:text-red-400'
+        }`} />
+      </button>
+
       {/* Copier image (action principale) */}
       <button onClick={handleCopyImage} className={`
             p-1.5 rounded-lg glass backdrop-blur-sm
