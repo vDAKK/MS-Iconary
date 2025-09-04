@@ -124,7 +124,7 @@ const Index = () => {
   } = useInfiniteScroll(processedIcons, {
     initialItemsPerPage: 24,
     itemsPerPage: 12,
-    threshold: 200
+    threshold: 100 // Réduit pour laisser plus d'espace au footer
   });
 
   // Reset du scroll infini quand les filtres changent
