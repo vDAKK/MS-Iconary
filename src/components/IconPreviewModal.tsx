@@ -176,12 +176,27 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
     setColors(resetColors);
   };
 
+  // Fonction pour ajuster la taille du SVG
+  const getSizedSvg = (svgString: string, size: number) => {
+    // Remplacer les attributs width et height dans le SVG
+    let sizedSvg = svgString.replace(/width="[^"]*"/g, `width="${size}"`);
+    sizedSvg = sizedSvg.replace(/height="[^"]*"/g, `height="${size}"`);
+    
+    // Si pas d'attributs width/height, les ajouter après la balise svg
+    if (!sizedSvg.includes('width=') || !sizedSvg.includes('height=')) {
+      sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 width="${size}" height="${size}">`);
+    }
+    
+    return sizedSvg;
+  };
+
   const handleCopyImage = async () => {
     try {
-      await copyImageToClipboard(modifiedSvg, `${name}_modified`);
+      const sizedSvg = getSizedSvg(modifiedSvg, iconSize);
+      await copyImageToClipboard(sizedSvg, `${name}_modified_${iconSize}px`);
       toast({
         title: "Image copiée",
-        description: "L'icône modifiée a été copiée dans le presse-papiers"
+        description: `L'icône modifiée (${iconSize}px) a été copiée dans le presse-papiers`
       });
     } catch (error) {
       console.error('Error copying image:', error);
@@ -190,10 +205,11 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
 
   const handleCopyCode = async () => {
     try {
-      await copyTextToClipboard(modifiedSvg, `${name}_modified`);
+      const sizedSvg = getSizedSvg(modifiedSvg, iconSize);
+      await copyTextToClipboard(sizedSvg, `${name}_modified_${iconSize}px`);
       toast({
         title: "Code SVG copié",
-        description: "Le code SVG modifié a été copié dans le presse-papiers"
+        description: `Le code SVG modifié (${iconSize}px) a été copié dans le presse-papiers`
       });
     } catch (error) {
       console.error('Error copying code:', error);
@@ -202,10 +218,11 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
 
   const handleDownload = () => {
     try {
-      downloadSvg(modifiedSvg, `${name}_modified`);
+      const sizedSvg = getSizedSvg(modifiedSvg, iconSize);
+      downloadSvg(sizedSvg, `${name}_modified_${iconSize}px`);
       toast({
         title: "Téléchargement lancé",
-        description: "L'icône modifiée a été téléchargée"
+        description: `L'icône modifiée (${iconSize}px) a été téléchargée`
       });
     } catch (error) {
       console.error('Error downloading:', error);
