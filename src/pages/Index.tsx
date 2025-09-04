@@ -190,7 +190,7 @@ const Index = () => {
               
               {/* Zone de recherche et filtres */}
               <div className="flex items-center justify-center">
-                <div className="flex items-center">
+                <div className="flex items-stretch max-w-2xl">
                   <AdvancedFilters
                     filters={filters}
                     onFiltersChange={setFilters}
@@ -202,6 +202,7 @@ const Index = () => {
                     value={searchQuery} 
                     onChange={setSearchQuery}
                     placeholder="Rechercher une icône..."
+                    className="flex-1"
                   />
                 </div>
               </div>
