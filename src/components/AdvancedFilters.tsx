@@ -85,7 +85,7 @@ export const AdvancedFilters = ({
               {favoritesCount > 0 && (
                 <Button variant="ghost" size="sm" onClick={onClearFavorites}>
                   <X className="w-3 h-3 mr-1" />
-                  Vider
+                  Supprimer les favoris
                 </Button>
               )}
             </div>
