@@ -41,7 +41,7 @@ export const IconCard = ({
   const { toast } = useToast();
   const clickTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Nettoyer le SVG en supprimant les déclarations XML, DOCTYPE, entités et commentaires
+  // Nettoyer et normaliser le SVG pour l'affichage dans la carte
   const cleanSvg = (svgContent: string): string => {
     // Créer un ID unique basé sur le nom de l'icône
     const uniqueId = name.replace(/[^a-zA-Z0-9]/g, '').toLowerCase();
@@ -66,36 +66,38 @@ export const IconCard = ({
     cleaned = cleaned.replace(/url\(#([^)]+)\)/g, `url(#${uniqueId}_$1)`);
     cleaned = cleaned.replace(/href="#([^"]+)"/g, `href="#${uniqueId}_$1"`);
     
-    // SOLUTION AGRESSIVE : Forcer currentColor pour les icônes monocouleurs problématiques
-    const isMonochromeIcon = (svg: string): boolean => {
-      // Détecte si l'icône utilise des couleurs problématiques (gris, noir, blanc)
-      const problematicColors = [
-        '#000000', '#000', '#333333', '#333', '#666666', '#666', 
-        '#999999', '#999', '#212121', '#424242', 'black', 'gray', 'grey',
-        '#ffffff', '#fff', 'white', '#f0f0f0', '#e0e0e0', '#d0d0d0'
-      ];
-      
-      // Vérifie si l'icône contient uniquement des couleurs problématiques
-      const hasProblematicColors = problematicColors.some(color => 
-        svg.includes(`fill="${color}"`) || 
-        svg.includes(`stroke="${color}"`)
-      );
-      
-      // Vérifie si l'icône n'a pas de couleurs définies (paths sans fill/stroke)
-      const hasNoColors = !svg.includes('fill=') && !svg.includes('stroke=') && svg.includes('path');
-      
-      // Vérifie qu'il n'y a pas de couleurs vives (rouge, vert, bleu, etc.)
-      const hasNoVividColors = !/#[0-9a-fA-F]{3,6}/.test(svg) || 
-        !svg.match(/#(?!000|fff|333|666|999|f0f|e0e|d0d)[0-9a-fA-F]{3,6}/);
-      
-      return hasProblematicColors || hasNoColors;
-    };
-
-    // Supprimer les logs maintenant que je comprends le problème
-    // L'icône utilise déjà currentColor mais l'élément parent n'avait pas de couleur définie
-    // Le style inline color: hsl(var(--foreground)) résout le problème
-    
     return cleaned;
+  };
+
+  // Fonction pour normaliser la taille du SVG pour l'affichage dans la carte
+  const normalizeSvgForCard = (svgContent: string): string => {
+    let normalized = cleanSvg(svgContent);
+    
+    // Forcer une taille standard pour l'affichage dans la carte (24x24)
+    normalized = normalized.replace(/(<svg[^>]*)\s+width="[^"]*"/g, '$1');
+    normalized = normalized.replace(/(<svg[^>]*)\s+height="[^"]*"/g, '$1');
+    normalized = normalized.replace(/<svg([^>]*)>/, '<svg$1 width="24" height="24">');
+    
+    // S'assurer qu'il y a un viewBox approprié pour que l'icône s'affiche correctement
+    if (!normalized.includes('viewBox=')) {
+      // Essayer de détecter la taille originale depuis le SVG original
+      const originalWidthMatch = svgContent.match(/width="([^"]+)"/);
+      const originalHeightMatch = svgContent.match(/height="([^"]+)"/);
+      
+      if (originalWidthMatch && originalHeightMatch) {
+        const origW = parseFloat(originalWidthMatch[1]);
+        const origH = parseFloat(originalHeightMatch[1]);
+        if (!isNaN(origW) && !isNaN(origH)) {
+          normalized = normalized.replace(/<svg([^>]*)>/, `<svg$1 viewBox="0 0 ${origW} ${origH}">`);
+        } else {
+          normalized = normalized.replace(/<svg([^>]*)>/, '<svg$1 viewBox="0 0 18 18">');
+        }
+      } else {
+        normalized = normalized.replace(/<svg([^>]*)>/, '<svg$1 viewBox="0 0 18 18">');
+      }
+    }
+    
+    return normalized;
   };
 
   const handleCopyImage = async (e: React.MouseEvent) => {
@@ -326,12 +328,10 @@ export const IconCard = ({
               icon-container
               text-foreground group-hover:text-primary
               transition-colors duration-smooth 
-              w-6 h-6 flex items-center justify-center 
-              [&>svg]:w-full [&>svg]:h-full [&>svg]:max-w-6 [&>svg]:max-h-6
-              [&>svg]:drop-shadow-sm
+              w-6 h-6 flex items-center justify-center
             " 
             style={{ color: 'hsl(var(--foreground))' }}
-            dangerouslySetInnerHTML={{ __html: cleanSvg(svg) }} 
+            dangerouslySetInnerHTML={{ __html: normalizeSvgForCard(svg) }} 
           />
         </div>
       </div>
