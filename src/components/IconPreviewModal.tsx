@@ -239,7 +239,7 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
 
   const handleCopyImage = async () => {
     try {
-      const sizedSvg = getSizedSvg(modifiedSvg, iconSize);
+      const sizedSvg = modifiedSvg;
       await copyImageToClipboard(sizedSvg, `${name}_modified_${iconSize}px`);
       toast({
         title: "Image copiée",
@@ -252,7 +252,7 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
 
   const handleCopyCode = async () => {
     try {
-      const sizedSvg = getSizedSvg(modifiedSvg, iconSize);
+      const sizedSvg = modifiedSvg;
       await copyTextToClipboard(sizedSvg, `${name}_modified_${iconSize}px`);
       toast({
         title: "Code SVG copié",
@@ -265,7 +265,7 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
 
   const handleDownload = () => {
     try {
-      const sizedSvg = getSizedSvg(modifiedSvg, iconSize);
+      const sizedSvg = modifiedSvg;
       downloadSvg(sizedSvg, `${name}_modified_${iconSize}px`);
       toast({
         title: "Téléchargement lancé",
@@ -317,9 +317,9 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
             <div className="p-8 border border-border rounded-lg bg-background flex items-center justify-center">
               <div 
                 key={`main-${svgKey}`}
-                className="text-foreground flex items-center justify-center"
+                className="text-foreground flex items-center justify-center [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:object-contain"
                 style={{ width: iconSize, height: iconSize, color: 'hsl(var(--foreground))' }}
-                dangerouslySetInnerHTML={{ __html: getSizedSvg(modifiedSvg, iconSize) }}
+                dangerouslySetInnerHTML={{ __html: modifiedSvg }}
               />
             </div>
             
