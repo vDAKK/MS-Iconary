@@ -317,9 +317,9 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
             <div className="p-8 border border-border rounded-lg bg-background flex items-center justify-center">
               <div 
                 key={`main-${svgKey}`}
-                className="[&>svg]:w-full [&>svg]:h-full text-foreground"
+                className="text-foreground flex items-center justify-center"
                 style={{ width: iconSize, height: iconSize, color: 'hsl(var(--foreground))' }}
-                dangerouslySetInnerHTML={{ __html: modifiedSvg }}
+                dangerouslySetInnerHTML={{ __html: getSizedSvg(modifiedSvg, iconSize) }}
               />
             </div>
             
