@@ -190,47 +190,27 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
   const getSizedSvg = (svgString: string, size: number) => {
     let sizedSvg = svgString;
     
-    // 1. Remplacer les attributs width et height existants
-    sizedSvg = sizedSvg.replace(/width="[^"]*"/g, `width="${size}"`);
-    sizedSvg = sizedSvg.replace(/height="[^"]*"/g, `height="${size}"`);
+    // 1. Forcer les attributs width et height sur l'élément SVG racine
+    sizedSvg = sizedSvg.replace(/(<svg[^>]*)\s+width="[^"]*"/g, '$1');
+    sizedSvg = sizedSvg.replace(/(<svg[^>]*)\s+height="[^"]*"/g, '$1');
+    sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 width="${size}" height="${size}">`);
     
-    // 2. Si pas d'attributs width/height, les ajouter
-    if (!sizedSvg.includes('width=')) {
-      sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 width="${size}">`);
-    }
-    if (!sizedSvg.includes('height=')) {
-      sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 height="${size}">`);
-    }
-    
-    // 3. Gérer les viewBox pour s'assurer que l'icône s'adapte correctement
-    if (sizedSvg.includes('viewBox=')) {
-      // Si un viewBox existe, s'assurer qu'il est cohérent
-      const viewBoxMatch = sizedSvg.match(/viewBox="([^"]+)"/);
-      if (viewBoxMatch) {
-        const [, viewBoxValue] = viewBoxMatch;
-        const viewBoxParts = viewBoxValue.split(/\s+/);
-        if (viewBoxParts.length === 4) {
-          // Garder le viewBox original pour préserver les proportions
-          // mais s'assurer que width et height sont définis
-        }
-      }
-    } else {
-      // Si pas de viewBox, en ajouter un basé sur la taille originale ou utiliser 0 0 24 24 par défaut
+    // 2. S'assurer qu'il y a un viewBox approprié
+    if (!sizedSvg.includes('viewBox=')) {
+      // Essayer de détecter la taille originale depuis le SVG original
       const originalWidthMatch = svgString.match(/width="([^"]+)"/);
       const originalHeightMatch = svgString.match(/height="([^"]+)"/);
       
       if (originalWidthMatch && originalHeightMatch) {
-        const origW = originalWidthMatch[1];
-        const origH = originalHeightMatch[1];
-        // Extraire les valeurs numériques
-        const wNum = parseFloat(origW);
-        const hNum = parseFloat(origH);
-        if (!isNaN(wNum) && !isNaN(hNum)) {
-          sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 viewBox="0 0 ${wNum} ${hNum}">`);
+        const origW = parseFloat(originalWidthMatch[1]);
+        const origH = parseFloat(originalHeightMatch[1]);
+        if (!isNaN(origW) && !isNaN(origH)) {
+          sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 viewBox="0 0 ${origW} ${origH}">`);
+        } else {
+          sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 viewBox="0 0 18 18">`);
         }
       } else {
-        // Fallback: utiliser une viewBox standard
-        sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 viewBox="0 0 24 24">`);
+        sizedSvg = sizedSvg.replace(/<svg([^>]*)>/, `<svg$1 viewBox="0 0 18 18">`);
       }
     }
     
@@ -239,7 +219,7 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
 
   const handleCopyImage = async () => {
     try {
-      const sizedSvg = modifiedSvg;
+      const sizedSvg = getSizedSvg(modifiedSvg, iconSize);
       await copyImageToClipboard(sizedSvg, `${name}_modified_${iconSize}px`);
       toast({
         title: "Image copiée",
@@ -252,7 +232,7 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
 
   const handleCopyCode = async () => {
     try {
-      const sizedSvg = modifiedSvg;
+      const sizedSvg = getSizedSvg(modifiedSvg, iconSize);
       await copyTextToClipboard(sizedSvg, `${name}_modified_${iconSize}px`);
       toast({
         title: "Code SVG copié",
@@ -265,7 +245,7 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
 
   const handleDownload = () => {
     try {
-      const sizedSvg = modifiedSvg;
+      const sizedSvg = getSizedSvg(modifiedSvg, iconSize);
       downloadSvg(sizedSvg, `${name}_modified_${iconSize}px`);
       toast({
         title: "Téléchargement lancé",
@@ -317,9 +297,9 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
             <div className="p-8 border border-border rounded-lg bg-background flex items-center justify-center">
               <div 
                 key={`main-${svgKey}`}
-                className="text-foreground flex items-center justify-center [&>svg]:max-w-full [&>svg]:max-h-full [&>svg]:object-contain"
-                style={{ width: iconSize, height: iconSize, color: 'hsl(var(--foreground))' }}
-                dangerouslySetInnerHTML={{ __html: modifiedSvg }}
+                className="text-foreground flex items-center justify-center"
+                style={{ color: 'hsl(var(--foreground))' }}
+                dangerouslySetInnerHTML={{ __html: getSizedSvg(modifiedSvg, iconSize) }}
               />
             </div>
             
