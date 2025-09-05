@@ -217,6 +217,36 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
     return sizedSvg;
   };
 
+  // Fonction pour normaliser le SVG pour les petites box de prévisualisation (taille fixe)
+  const normalizePreviewSvg = (svgContent: string): string => {
+    let normalized = svgContent;
+    
+    // Forcer une taille fixe de 32px pour les box de prévisualisation
+    normalized = normalized.replace(/(<svg[^>]*)\s+width="[^"]*"/g, '$1');
+    normalized = normalized.replace(/(<svg[^>]*)\s+height="[^"]*"/g, '$1');
+    normalized = normalized.replace(/<svg([^>]*)>/, '<svg$1 width="32" height="32">');
+    
+    // S'assurer qu'il y a un viewBox approprié
+    if (!normalized.includes('viewBox=')) {
+      const originalWidthMatch = originalSvg.match(/width="([^"]+)"/);
+      const originalHeightMatch = originalSvg.match(/height="([^"]+)"/);
+      
+      if (originalWidthMatch && originalHeightMatch) {
+        const origW = parseFloat(originalWidthMatch[1]);
+        const origH = parseFloat(originalHeightMatch[1]);
+        if (!isNaN(origW) && !isNaN(origH)) {
+          normalized = normalized.replace(/<svg([^>]*)>/, `<svg$1 viewBox="0 0 ${origW} ${origH}">`);
+        } else {
+          normalized = normalized.replace(/<svg([^>]*)>/, '<svg$1 viewBox="0 0 24 24">');
+        }
+      } else {
+        normalized = normalized.replace(/<svg([^>]*)>/, '<svg$1 viewBox="0 0 24 24">');
+      }
+    }
+    
+    return normalized;
+  };
+
   const handleCopyImage = async () => {
     try {
       const sizedSvg = getSizedSvg(modifiedSvg, iconSize);
@@ -308,25 +338,25 @@ export const IconPreviewModal = ({ isOpen, onClose, name, originalSvg }: IconPre
               <div className="p-4 bg-white border rounded-lg flex items-center justify-center">
                 <div 
                   key={`white-${svgKey}`}
-                  className="w-8 h-8 [&>svg]:w-full [&>svg]:h-full text-gray-800"
+                  className="w-8 h-8 flex items-center justify-center text-gray-800"
                   style={{ color: '#1f2937' }}
-                  dangerouslySetInnerHTML={{ __html: modifiedSvg }}
+                  dangerouslySetInnerHTML={{ __html: normalizePreviewSvg(modifiedSvg) }}
                 />
               </div>
               <div className="p-4 bg-gray-100 border rounded-lg flex items-center justify-center">
                 <div 
                   key={`gray-${svgKey}`}
-                  className="w-8 h-8 [&>svg]:w-full [&>svg]:h-full text-gray-700"
+                  className="w-8 h-8 flex items-center justify-center text-gray-700"
                   style={{ color: '#374151' }}
-                  dangerouslySetInnerHTML={{ __html: modifiedSvg }}
+                  dangerouslySetInnerHTML={{ __html: normalizePreviewSvg(modifiedSvg) }}
                 />
               </div>
               <div className="p-4 bg-gray-900 border rounded-lg flex items-center justify-center">
                 <div 
                   key={`dark-${svgKey}`}
-                  className="w-8 h-8 [&>svg]:w-full [&>svg]:h-full text-white"
+                  className="w-8 h-8 flex items-center justify-center text-white"
                   style={{ color: '#ffffff' }}
-                  dangerouslySetInnerHTML={{ __html: modifiedSvg }}
+                  dangerouslySetInnerHTML={{ __html: normalizePreviewSvg(modifiedSvg) }}
                 />
               </div>
             </div>
