@@ -12,32 +12,18 @@ let adsenseScriptInjected = false;
 
 export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) => {
   const [isVisible, setIsVisible] = useState(true);
-  const [adLoaded, setAdLoaded] = useState(false);
 
   useEffect(() => {
-    // Afficher les pubs dans tous les cas, personnalisées ou non selon le consentement
-    const consent = localStorage.getItem('cookie-consent');
-    
+    // Initialiser AdSense automatiquement
     const timer = setTimeout(() => {
       if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
         try {
-          const adConfig: any = {};
-          
-          // Si refus ou pas de choix spécifique pour les non-personnalisées, utiliser des pubs non personnalisées
-          if (consent === 'declined' || consent === 'non-personalized' || !consent) {
-            adConfig.google_ad_client = "ca-pub-4484520636329323";
-            adConfig.non_personalized_ads = true;
-          }
-          
-          ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push(adConfig);
-          // Pousser l'élément pour l'initialiser
           ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
-          setAdLoaded(true);
         } catch (e) {
-          console.log('AdSense push error:', e);
+          console.log('AdSense initialization error:', e);
         }
       }
-    }, 500);
+    }, 100);
 
     return () => clearTimeout(timer);
   }, []);
@@ -56,25 +42,16 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
       <Button
         variant="ghost"
         size="sm"
-        className="absolute top-2 right-2 h-6 w-6 p-0 opacity-50 hover:opacity-100"
+        className="absolute top-2 right-2 h-6 w-6 p-0 opacity-50 hover:opacity-100 z-10"
         onClick={() => setIsVisible(false)}
       >
         <X className="h-3 w-3" />
       </Button>
 
-      {/* Affichage conditionnel : vraie pub ou contenu de prévisualisation */}
-      {!adLoaded && (
-        <div className="flex items-center justify-center text-muted-foreground/60 text-sm h-full absolute inset-0">
-          <div className="text-center">
-            <div className="text-xs opacity-75 mb-1">📢 Publicité</div>
-            <div className="text-xs">AdSense • Contenu fixe dans ce bloc</div>
-          </div>
-        </div>
-      )}
-
+      {/* Bloc AdSense pour détection automatique */}
       <ins
-        className="adsbygoogle w-full block"
-        style={{ display: 'block', width: '100%', height: '100%' }}
+        className="adsbygoogle"
+        style={{ display: 'block' }}
         data-ad-client="ca-pub-4484520636329323"
         data-ad-slot={adSlot}
         data-ad-format="auto"
