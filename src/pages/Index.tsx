@@ -9,7 +9,7 @@ import { AdvancedFilters, FilterOptions } from '@/components/AdvancedFilters';
 import { AdBanner } from '@/components/AdBanner';
 import { SupportButton } from '@/components/SupportButton';
 import { ScrollToTop } from '@/components/ScrollToTop';
-import { CookieConsent } from '@/components/CookieConsent';
+
 import { PrivacyPolicy } from '@/components/PrivacyPolicy';
 import { iconsData, deleteIcon } from '@/data/icons';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -378,8 +378,6 @@ const Index = () => {
         {/* Bouton scroll to top */}
         <ScrollToTop />
 
-        {/* Consentement aux cookies */}
-        <CookieConsent />
 
         {/* Indicateur mode admin */}
         {isAdminMode && (
