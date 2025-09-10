@@ -150,6 +150,7 @@ const Index = () => {
 
   return (
     <>
+      <GoogleAdsense adSlot="ca-pub-4484520636329323" />
       <SEOHead 
         title={seoTitle}
         description={seoDescription}
