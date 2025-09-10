@@ -11,14 +11,14 @@ export const SupportButton = () => {
   const supportOptions = [
     {
       name: "Buy me a coffee",
-      url: "https://buymeacoffee.com/votre-username", // À remplacer par votre lien
+      url: "https://buymeacoffee.com/dakk", // À remplacer par votre lien
       icon: Coffee,
-      description: "Soutenez le projet avec un café ☕",
-      amount: "3€"
+      description: "Soutenez le projet avec un café ☕ ou une pizza 🍕",
+      amount: "Montant libre"
     },
     {
       name: "PayPal",
-      url: "https://paypal.me/votre-username", // À remplacer par votre lien
+      url: "https://paypal.me/DavidCC0", // À remplacer par votre lien
       icon: Heart,
       description: "Don via PayPal",
       amount: "Montant libre"
@@ -83,7 +83,7 @@ export const SupportButton = () => {
 
           <div className="pt-4 border-t">
             <p className="text-xs text-muted-foreground text-center">
-              Votre soutien nous aide à maintenir le serveur et à ajouter de nouvelles icônes régulièrement. Merci ! ❤️
+              Votre soutien nous aide à maintenir le site en ligne et à ajouter de nouvelles icônes régulièrement. Merci ! ❤️
             </p>
           </div>
         </div>
