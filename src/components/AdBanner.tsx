@@ -14,20 +14,20 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    // Le script AdSense est déjà chargé dans index.html avec la config globale
-    // Déclencher seulement l'affichage des annonces spécifiques
+    // Initialisation AdSense avec délai pour permettre à Google de détecter l'emplacement
     const timer = setTimeout(() => {
-      if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
-        try {
-          ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
-        } catch (e) {
-          console.log('AdSense push error:', e);
+      try {
+        if (typeof window !== 'undefined') {
+          (window as any).adsbygoogle = (window as any).adsbygoogle || [];
+          (window as any).adsbygoogle.push({});
         }
+      } catch (e) {
+        console.error('AdSense initialization error:', e);
       }
-    }, 500);
+    }, 1000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [adSlot]);
 
   if (!isVisible) return null;
 
@@ -51,11 +51,12 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
 
       <ins
         className="adsbygoogle"
-        style={{ display: 'block' }}
+        style={{ display: 'block', width: '100%', height: '100%', minHeight: '60px' }}
         data-ad-client="ca-pub-4484520636329323"
         data-ad-slot={adSlot}
         data-ad-format="auto"
         data-full-width-responsive="true"
+        data-ad-layout-key="-gw-1+2a-9x+5c"
       ></ins>
 
       <div className="absolute top-1 left-2 text-[10px] text-muted-foreground/60 font-mono">

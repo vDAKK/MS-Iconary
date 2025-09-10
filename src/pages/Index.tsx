@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { SearchBar } from '@/components/SearchBar';
 import { IconCard } from '@/components/IconCard';
+import { AdCard } from '@/components/AdCard';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { SEOHead } from '@/components/SEOHead';
 import { AdminPasswordModal } from '@/components/AdminPasswordModal';
