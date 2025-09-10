@@ -59,13 +59,20 @@ export const CookieConsent = () => {
 
   const handleDecline = () => {
     localStorage.setItem('cookie-consent', 'declined');
-    setHasConsented(false);
+    setHasConsented(true); // On garde les pubs non personnalisées
     setIsVisible(false);
     
-    // Désactiver AdSense complètement
-    if (typeof window !== 'undefined') {
-      const ads = document.querySelectorAll('.adsbygoogle');
-      ads.forEach(ad => ad.remove());
+    // Activer AdSense SANS traçage même en cas de refus
+    if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
+      try {
+        ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({
+          google_ad_client: "ca-pub-4484520636329323", 
+          enable_page_level_ads: false,
+          non_personalized_ads: true // Pubs NON personnalisées
+        });
+      } catch (e) {
+        console.log('AdSense non-personalized after decline:', e);
+      }
     }
   };
 
@@ -90,28 +97,28 @@ export const CookieConsent = () => {
                 Respect de votre vie privée
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Ce site utilise Google AdSense pour afficher des publicités et maintenir le service gratuit. 
-                Vous pouvez choisir le niveau de personnalisation souhaité.
+                Ce site utilise Google AdSense pour maintenir le service gratuit. Des publicités seront affichées 
+                dans tous les cas, mais vous pouvez choisir si elles sont personnalisées ou non.
               </p>
             </div>
 
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap gap-2">
                 <Button onClick={handleAccept} size="sm" className="font-medium">
-                  ✨ Publicités personnalisées
+                  ✨ Accepter la personnalisation
                 </Button>
                 <Button onClick={handleNonPersonalized} variant="outline" size="sm" className="font-medium">
-                  🛡️ Publicités sans traçage
+                  🛡️ Publicités standard
                 </Button>
                 <Button onClick={handleDecline} variant="secondary" size="sm">
-                  ❌ Aucune publicité
+                  📢 Continuer sans personnalisation
                 </Button>
               </div>
               
               <div className="flex flex-wrap gap-2 justify-between items-center">
-                <div className="text-xs text-muted-foreground/80 max-w-md">
-                  <strong>Sans traçage :</strong> Publicités basées sur le contenu de la page uniquement, 
-                  aucun cookie de suivi personnel.
+                <div className="text-xs text-muted-foreground/80 max-w-lg">
+                  <strong>Toutes les options affichent des publicités.</strong> Seule la personnalisation change : 
+                  basées sur vos centres d'intérêt ou sur le contenu de la page uniquement.
                 </div>
                 <Button 
                   onClick={handleSettings} 
@@ -125,7 +132,7 @@ export const CookieConsent = () => {
               </div>
               
               <div className="text-xs text-muted-foreground/70">
-                Conformité RGPD • Données sécurisées
+                Service gratuit financé par la publicité • Conformité RGPD
               </div>
             </div>
           </div>
