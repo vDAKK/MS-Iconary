@@ -14,19 +14,35 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    // Initialisation AdSense avec délai pour permettre à Google de détecter l'emplacement
-    const timer = setTimeout(() => {
+    // Attendre que le DOM soit complètement chargé et que AdSense soit prêt
+    const initializeAd = () => {
       try {
-        if (typeof window !== 'undefined') {
-          (window as any).adsbygoogle = (window as any).adsbygoogle || [];
-          (window as any).adsbygoogle.push({});
+        if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
+          const adElement = document.querySelector(`ins[data-ad-slot="${adSlot}"]`);
+          if (adElement && !(window as any).adsbygoogle.loaded) {
+            (window as any).adsbygoogle.push({});
+            console.log(`AdSense initialized for slot: ${adSlot}`);
+          }
         }
       } catch (e) {
         console.error('AdSense initialization error:', e);
       }
-    }, 1000);
+    };
 
-    return () => clearTimeout(timer);
+    // Délai plus long pour s'assurer que Google a le temps de détecter
+    const timer = setTimeout(initializeAd, 2000);
+    
+    // Essayer aussi après le load de la page
+    if (document.readyState === 'complete') {
+      setTimeout(initializeAd, 1000);
+    } else {
+      window.addEventListener('load', () => setTimeout(initializeAd, 1000));
+    }
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('load', initializeAd);
+    };
   }, [adSlot]);
 
   if (!isVisible) return null;
@@ -56,7 +72,8 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
         data-ad-slot={adSlot}
         data-ad-format="auto"
         data-full-width-responsive="true"
-        data-ad-layout-key="-gw-1+2a-9x+5c"
+        data-ad-test="on"
+        data-adbreak-test="on"
       ></ins>
 
       <div className="absolute top-1 left-2 text-[10px] text-muted-foreground/60 font-mono">
