@@ -200,17 +200,29 @@ export const IconCard = ({
   const handleFavoriteToggle = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
+    
+    // Animation du bouton
+    const button = e.currentTarget as HTMLButtonElement;
+    button.style.transform = 'scale(0.85)';
+    setTimeout(() => {
+      button.style.transform = 'scale(1.1)';
+      setTimeout(() => {
+        button.style.transform = 'scale(1)';
+      }, 150);
+    }, 100);
+    
     onToggleFavorite?.(name);
   };
    return (
     <div className={`
         relative group cursor-pointer rounded-xl p-6 
-        glass border border-border/50
-        hover:border-primary/30 hover:shadow-glow
-        transition-all duration-smooth ease-out
+        glass border transition-all duration-smooth ease-out
         hover:-translate-y-1 hover:scale-[1.02]
         animate-fade-in
-        ${isFavorite ? 'before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-red-500/5 before:via-transparent before:to-red-500/5 before:opacity-60 before:pointer-events-none' : ''}
+        ${isFavorite 
+          ? 'border-red-400/40 hover:border-red-400/60 shadow-red-500/10 shadow-lg before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-red-500/10 before:via-red-400/5 before:to-red-500/10 before:opacity-80 before:pointer-events-none after:absolute after:inset-0 after:rounded-xl after:bg-gradient-to-r after:from-transparent after:via-red-400/5 after:to-transparent after:animate-pulse after:pointer-events-none' 
+          : 'border-border/50 hover:border-primary/30 hover:shadow-glow'
+        }
         ${className}
       `}
       style={style} 
@@ -239,12 +251,14 @@ export const IconCard = ({
         `}>
         <button onClick={handleFavoriteToggle} className={`
               p-1.5 rounded-lg glass backdrop-blur-sm
-              border border-border/30 hover:border-red-400/50
-              transition-all duration-smooth
-              ${isFavorite ? 'bg-red-100/20 border-red-400' : 'hover:bg-red-50/10'}
+              border transition-all duration-smooth origin-center
+              ${isFavorite 
+                ? 'bg-red-100/30 border-red-400/60 shadow-red-500/20 shadow-md' 
+                : 'border-border/30 hover:border-red-400/50 hover:bg-red-50/10'
+              }
             `} title={isFavorite ? "Retirer des favoris" : "Ajouter aux favoris"}>
           <Heart className={`w-3.5 h-3.5 transition-all duration-smooth ${
-            isFavorite ? 'text-red-500 fill-red-500 scale-110' : 'text-muted-foreground group-hover:text-red-400'
+            isFavorite ? 'text-red-500 fill-red-500 scale-110 drop-shadow-sm' : 'text-muted-foreground group-hover:text-red-400'
           }`} />
         </button>
       </div>
