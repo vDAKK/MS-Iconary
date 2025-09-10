@@ -13,7 +13,7 @@ export const SupportButton = () => {
       name: "Buy me a coffee",
       url: "https://buymeacoffee.com/dakk", // À remplacer par votre lien
       icon: Coffee,
-      description: "Soutenez le projet avec un café ☕ ou une pizza 🍕",
+      description: "Soutenez le projet avec un café ☕",
       amount: "Montant libre"
     },
     {
