@@ -169,10 +169,9 @@ const Index = () => {
         {/* Header */}
         <header className="relative border-b border-border/30 glass backdrop-blur-xl" role="banner">
           <div className="container mx-auto px-6 py-12">
-            {/* Toggle de thème et bouton de support */}
+            {/* Toggle de thème */}
             <div className="absolute top-6 right-6 flex gap-2">
               {isAdminMode && <HiddenIconsManager />}
-              <SupportButton />
               <ThemeToggle />
             </div>
             
@@ -222,12 +221,12 @@ const Index = () => {
         </header>
 
         {/* Bannière publicitaire discrète */}
-        <AdBanner position="top" />
+        <AdBanner position="top" adSlot="1234567890" />
 
         {/* Grille d'icônes avec scroll infini */}
         <main className="container mx-auto px-6 py-12" role="main">
-          {/* Bouton filtres au-dessus des icônes */}
-          <div className="flex justify-start mb-6">
+          {/* Bouton filtres et support au-dessus des icônes */}
+          <div className="flex items-center gap-3 mb-6">
             <AdvancedFilters
               filters={filters}
               onFiltersChange={setFilters}
@@ -235,6 +234,7 @@ const Index = () => {
               favoritesCount={favoritesCount}
               onClearFavorites={clearFavorites}
             />
+            <SupportButton />
           </div>
 
           {visibleIcons.length > 0 ? (
@@ -328,7 +328,7 @@ const Index = () => {
         </main>
 
         {/* Bannière publicitaire discrète en bas */}
-        <AdBanner position="bottom" />
+        <AdBanner position="bottom" adSlot="0987654321" />
 
         {/* Footer */}
         <footer className="border-t border-border/30 glass backdrop-blur-xl mt-auto" role="contentinfo">

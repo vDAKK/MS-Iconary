@@ -15,23 +15,18 @@ export const GoogleAdsense = ({
 }: GoogleAdsenseProps) => {
   
   useEffect(() => {
-    try {
-      // Charger Google AdSense si ce n'est pas déjà fait
-      if (typeof window !== 'undefined' && !(window as any).adsbygoogle) {
-        const script = document.createElement('script');
-        script.async = true;
-        script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4484520636329323';
-        script.crossOrigin = 'anonymous';
-        document.head.appendChild(script);
+    // Le script AdSense est déjà chargé dans index.html
+    const timer = setTimeout(() => {
+      try {
+        if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
+          ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+        }
+      } catch (error) {
+        console.log('AdSense error:', error);
       }
+    }, 100);
 
-      // Pousser l'annonce dans la file d'attente AdSense
-      if ((window as any).adsbygoogle) {
-        ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
-      }
-    } catch (error) {
-      console.log('AdSense error:', error);
-    }
+    return () => clearTimeout(timer);
   }, []);
 
   return (

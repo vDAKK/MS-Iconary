@@ -14,24 +14,19 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    // Injecter le script AdSense une seule fois
-    if (typeof window !== 'undefined' && !adsenseScriptInjected) {
-      const script = document.createElement('script');
-      script.async = true;
-      script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js';
-      script.crossOrigin = 'anonymous';
-      document.head.appendChild(script);
-      adsenseScriptInjected = true;
-    }
-
+    // Le script AdSense est déjà chargé dans index.html
     // Déclencher l'affichage des annonces
-    if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
-      try {
-        (window as any).adsbygoogle.push({});
-      } catch (e) {
-        // Ignore si appelé plusieurs fois
+    const timer = setTimeout(() => {
+      if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
+        try {
+          ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+        } catch (e) {
+          console.log('AdSense push error:', e);
+        }
       }
-    }
+    }, 100);
+
+    return () => clearTimeout(timer);
   }, []);
 
   if (!isVisible) return null;
