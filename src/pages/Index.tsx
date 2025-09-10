@@ -139,7 +139,7 @@ const Index = () => {
   const mixIconsWithAds = useMemo(() => {
     console.log('visibleIcons length:', visibleIcons.length);
     const result: any[] = [];
-    const adInterval = 8; // Une pub toutes les 8 icônes pour plus de visibilité
+    const adInterval = 15; // Une pub toutes les 15 icônes
     
     visibleIcons.forEach((icon, index) => {
       // Ajouter l'icône
