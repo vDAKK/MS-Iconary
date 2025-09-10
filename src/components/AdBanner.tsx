@@ -15,16 +15,22 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
 
   useEffect(() => {
     // Le script AdSense est déjà chargé dans index.html
-    // Déclencher l'affichage des annonces
+    // Déclencher l'affichage des annonces après un délai
     const timer = setTimeout(() => {
       if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
         try {
-          ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+          // Forcer AdSense à rester dans le conteneur
+          ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({
+            google_ad_client: "ca-pub-4484520636329323",
+            enable_page_level_ads: false,
+            overlays: {bottom: false},
+            auto_ad_client: false
+          });
         } catch (e) {
           console.log('AdSense push error:', e);
         }
       }
-    }, 100);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -49,21 +55,22 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
         <X className="h-3 w-3" />
       </Button>
 
-      {/* Contenu de démonstration en attendant la configuration AdSense */}
+      {/* Contenu de démonstration - sera remplacé par AdSense */}
       <div className="flex items-center justify-center text-muted-foreground/60 text-sm h-full">
         <div className="text-center">
-          <div className="text-xs opacity-75 mb-1">Publicité</div>
-          <div className="text-xs">Configuration AdSense en cours...</div>
+          <div className="text-xs opacity-75 mb-1">📢 Publicité</div>
+          <div className="text-xs">AdSense • Contenu fixe dans ce bloc</div>
         </div>
       </div>
 
       <ins
-        className="adsbygoogle w-full hidden"
-        style={{ display: 'none' }}
+        className="adsbygoogle w-full block"
+        style={{ display: 'block', width: '100%', height: '90px', minHeight: '90px' }}
         data-ad-client="ca-pub-4484520636329323"
         data-ad-slot={adSlot}
-        data-ad-format="auto"
-        data-full-width-responsive="true"
+        data-ad-format="horizontal"
+        data-full-width-responsive="false"
+        data-ad-layout="in-article"
       ></ins>
 
       <div className="absolute top-1 left-2 text-[10px] text-muted-foreground/60 font-mono">
