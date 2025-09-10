@@ -27,26 +27,38 @@ export const AdCard = ({ adSlot, style }: AdCardProps) => {
 
   return (
     <div 
-      className="group relative bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-orange-500/10 border-2 border-dashed border-purple-300/50 rounded-xl p-4 transition-all duration-300 hover:border-purple-400 hover:shadow-lg backdrop-blur-sm min-h-[180px] flex flex-col justify-center items-center animate-fade-in"
+      className="
+        relative group cursor-default rounded-xl p-6 
+        glass border border-border/50
+        hover:border-primary/30 hover:shadow-glow
+        transition-all duration-smooth ease-out
+        hover:-translate-y-1 hover:scale-[1.02]
+        animate-fade-in
+        min-h-[180px] flex flex-col justify-center items-center
+      "
       style={style}
     >
-      {/* Badge "Publicité" très visible */}
+      
+      {/* Effet de gradient au hover */}
+      <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/5 via-primary-light/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-smooth" />
+
+      {/* Badge "Publicité" discret mais visible */}
       <Badge 
         variant="secondary" 
-        className="absolute top-2 right-2 text-[10px] px-2 py-1 bg-purple-500 text-white font-bold"
+        className="absolute top-2 right-2 text-[10px] px-2 py-1 bg-accent/20 text-accent-foreground border border-accent/30 font-medium z-10"
       >
         Pub
       </Badge>
 
-      {/* Zone publicitaire avec fallback visible */}
-      <div className="w-full h-full flex items-center justify-center relative">
+      {/* Zone publicitaire avec fallback */}
+      <div className="relative w-full h-full flex items-center justify-center">
         <ins
           className="adsbygoogle"
           style={{ 
             display: 'block', 
             width: '100%', 
-            height: '150px',
-            minHeight: '150px'
+            height: '120px',
+            minHeight: '120px'
           }}
           data-ad-client="ca-pub-4484520636329323"
           data-ad-slot={adSlot}
@@ -54,19 +66,37 @@ export const AdCard = ({ adSlot, style }: AdCardProps) => {
           data-full-width-responsive="true"
         ></ins>
         
-        {/* Contenu de fallback très visible */}  
-        <div className="absolute inset-4 flex flex-col items-center justify-center text-purple-600 text-center bg-white/80 rounded-lg">
-          <div className="w-12 h-12 bg-purple-100 rounded-lg mb-2 flex items-center justify-center text-2xl">
-            📢
+        {/* Contenu de fallback stylisé comme les icônes */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          {/* Icône stylisée comme dans IconCard */}
+          <div className="
+            relative w-10 h-10 rounded-lg mb-4
+            bg-gradient-to-br from-secondary to-muted
+            border border-border/40
+            flex items-center justify-center
+            transition-all duration-smooth
+            group-hover:from-accent/15 group-hover:to-accent/8
+            group-hover:border-accent/30 group-hover:shadow-md group-hover:scale-105
+            shadow-sm
+          ">
+            <div className="text-2xl">📢</div>
           </div>
-          <div className="text-xs font-semibold">
-            Espace publicitaire
-          </div>
-          <div className="text-[10px] text-purple-500 mt-1">
-            Slot: {adSlot}
-          </div>
+          
+          {/* Nom stylisé comme dans IconCard */}
+          <p className="text-sm text-center text-muted-foreground group-hover:text-foreground transition-colors duration-smooth font-medium">
+            Publicité
+          </p>
         </div>
       </div>
+
+      {/* Effet shimmer subtil */}
+      <div className="
+        absolute inset-0 rounded-xl
+        bg-gradient-to-r from-transparent via-accent/5 to-transparent
+        opacity-0 group-hover:opacity-100
+        animate-shimmer bg-[length:200%_100%]
+        transition-opacity duration-slow
+      " />
     </div>
   );
 };
