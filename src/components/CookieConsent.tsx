@@ -24,12 +24,35 @@ export const CookieConsent = () => {
     setHasConsented(true);
     setIsVisible(false);
     
-    // Recharger AdSense après consentement
+    // AdSense avec publicités personnalisées
     if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
       try {
-        ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+        ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({
+          google_ad_client: "ca-pub-4484520636329323",
+          enable_page_level_ads: false,
+          non_personalized_ads: false // Pubs personnalisées autorisées
+        });
       } catch (e) {
         console.log('AdSense activation after consent:', e);
+      }
+    }
+  };
+
+  const handleNonPersonalized = () => {
+    localStorage.setItem('cookie-consent', 'non-personalized');
+    setHasConsented(true);
+    setIsVisible(false);
+    
+    // AdSense SANS traçage - publicités basées sur le contenu uniquement
+    if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
+      try {
+        ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({
+          google_ad_client: "ca-pub-4484520636329323",
+          enable_page_level_ads: false,
+          non_personalized_ads: true // Pubs NON personnalisées
+        });
+      } catch (e) {
+        console.log('AdSense non-personalized activation:', e);
       }
     }
   };
@@ -39,7 +62,7 @@ export const CookieConsent = () => {
     setHasConsented(false);
     setIsVisible(false);
     
-    // Désactiver AdSense si refusé
+    // Désactiver AdSense complètement
     if (typeof window !== 'undefined') {
       const ads = document.querySelectorAll('.adsbygoogle');
       ads.forEach(ad => ad.remove());
@@ -67,19 +90,29 @@ export const CookieConsent = () => {
                 Respect de votre vie privée
               </h3>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Ce site utilise des cookies et des technologies similaires pour améliorer votre expérience de navigation 
-                et afficher des publicités personnalisées via Google AdSense. Ces données nous aident à maintenir le service gratuit.
+                Ce site utilise Google AdSense pour afficher des publicités et maintenir le service gratuit. 
+                Vous pouvez choisir le niveau de personnalisation souhaité.
               </p>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center justify-between">
+            <div className="flex flex-col gap-4">
               <div className="flex flex-wrap gap-2">
                 <Button onClick={handleAccept} size="sm" className="font-medium">
-                  Accepter les cookies
+                  ✨ Publicités personnalisées
                 </Button>
-                <Button onClick={handleDecline} variant="outline" size="sm">
-                  Refuser
+                <Button onClick={handleNonPersonalized} variant="outline" size="sm" className="font-medium">
+                  🛡️ Publicités sans traçage
                 </Button>
+                <Button onClick={handleDecline} variant="secondary" size="sm">
+                  ❌ Aucune publicité
+                </Button>
+              </div>
+              
+              <div className="flex flex-wrap gap-2 justify-between items-center">
+                <div className="text-xs text-muted-foreground/80 max-w-md">
+                  <strong>Sans traçage :</strong> Publicités basées sur le contenu de la page uniquement, 
+                  aucun cookie de suivi personnel.
+                </div>
                 <Button 
                   onClick={handleSettings} 
                   variant="ghost" 

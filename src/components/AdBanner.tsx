@@ -14,12 +14,23 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    // Le script AdSense est déjà chargé dans index.html avec la config globale
-    // Déclencher seulement l'affichage des annonces spécifiques
+    // Vérifier le consentement avant d'afficher les pubs
+    const consent = localStorage.getItem('cookie-consent');
+    if (consent === 'declined') {
+      setIsVisible(false);
+      return;
+    }
+
+    // Le script AdSense est déjà chargé dans index.html
     const timer = setTimeout(() => {
-      if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
+      if (typeof window !== 'undefined' && (window as any).adsbygoogle && consent) {
         try {
-          ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+          const adConfig: any = {};
+          if (consent === 'non-personalized') {
+            adConfig.google_ad_client = "ca-pub-4484520636329323";
+            adConfig.non_personalized_ads = true;
+          }
+          ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push(adConfig);
         } catch (e) {
           console.log('AdSense push error:', e);
         }
