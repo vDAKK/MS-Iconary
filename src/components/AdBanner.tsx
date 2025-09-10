@@ -14,16 +14,17 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    // Initialiser AdSense automatiquement
+    // Le script AdSense est déjà chargé dans index.html avec la config globale
+    // Déclencher seulement l'affichage des annonces spécifiques
     const timer = setTimeout(() => {
       if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
         try {
           ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
         } catch (e) {
-          console.log('AdSense initialization error:', e);
+          console.log('AdSense push error:', e);
         }
       }
-    }, 100);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -42,20 +43,28 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
       <Button
         variant="ghost"
         size="sm"
-        className="absolute top-2 right-2 h-6 w-6 p-0 opacity-50 hover:opacity-100 z-10"
+        className="absolute top-2 right-2 h-6 w-6 p-0 opacity-50 hover:opacity-100"
         onClick={() => setIsVisible(false)}
       >
         <X className="h-3 w-3" />
       </Button>
 
-      {/* Bloc AdSense pour détection automatique */}
+      {/* Contenu de démonstration - sera remplacé par AdSense */}
+      <div className="flex items-center justify-center text-muted-foreground/60 text-sm h-full">
+        <div className="text-center">
+          <div className="text-xs opacity-75 mb-1">📢 Publicité</div>
+          <div className="text-xs">AdSense • Contenu fixe dans ce bloc</div>
+        </div>
+      </div>
+
       <ins
-        className="adsbygoogle"
-        style={{ display: 'block' }}
+        className="adsbygoogle w-full block"
+        style={{ display: 'block', width: '100%', height: '90px', minHeight: '90px' }}
         data-ad-client="ca-pub-4484520636329323"
         data-ad-slot={adSlot}
-        data-ad-format="auto"
-        data-full-width-responsive="true"
+        data-ad-format="horizontal"
+        data-full-width-responsive="false"
+        data-ad-layout="in-article"
       ></ins>
 
       <div className="absolute top-1 left-2 text-[10px] text-muted-foreground/60 font-mono">

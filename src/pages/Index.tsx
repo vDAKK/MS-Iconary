@@ -9,8 +9,6 @@ import { AdvancedFilters, FilterOptions } from '@/components/AdvancedFilters';
 import { AdBanner } from '@/components/AdBanner';
 import { SupportButton } from '@/components/SupportButton';
 import { ScrollToTop } from '@/components/ScrollToTop';
-
-import { PrivacyPolicy } from '@/components/PrivacyPolicy';
 import { iconsData, deleteIcon } from '@/data/icons';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
@@ -355,20 +353,16 @@ const Index = () => {
                 <div className="text-xs text-muted-foreground/60">
                   MS-Iconary • Copie d'image, code SVG, téléchargement et personnalisation
                 </div>
-                <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground/50">
-                  <span>
-                    Réalisé par{' '}
-                    <a 
-                      href="https://www.linkedin.com/in/david-ghesquiere/" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-primary hover:text-primary-hover transition-colors underline"
-                    >
-                      David GHESQUIERE
-                    </a>
-                  </span>
-                  <span>•</span>
-                  <PrivacyPolicy />
+                <div className="text-xs text-muted-foreground/50">
+                  Réalisé par{' '}
+                  <a 
+                    href="https://www.linkedin.com/in/david-ghesquiere/" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-primary hover:text-primary-hover transition-colors underline"
+                  >
+                    David GHESQUIERE
+                  </a>
                 </div>
               </div>
             </div>
@@ -377,7 +371,6 @@ const Index = () => {
 
         {/* Bouton scroll to top */}
         <ScrollToTop />
-
 
         {/* Indicateur mode admin */}
         {isAdminMode && (
