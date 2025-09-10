@@ -49,19 +49,22 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
         <X className="h-3 w-3" />
       </Button>
 
+      {/* Contenu de démonstration en attendant la configuration AdSense */}
+      <div className="flex items-center justify-center text-muted-foreground/60 text-sm h-full">
+        <div className="text-center">
+          <div className="text-xs opacity-75 mb-1">Publicité</div>
+          <div className="text-xs">Configuration AdSense en cours...</div>
+        </div>
+      </div>
+
       <ins
-        className="adsbygoogle w-full block"
-        style={{ display: 'block', width: '100%', height: '50px' }}
-        data-ad-client="ca-pub-4484520636329323" // Remplace ici par ton client AdSense
+        className="adsbygoogle w-full hidden"
+        style={{ display: 'none' }}
+        data-ad-client="ca-pub-4484520636329323"
         data-ad-slot={adSlot}
         data-ad-format="auto"
         data-full-width-responsive="true"
       ></ins>
-
-      {/* Contenu de démonstration en attendant les vraies pubs */}
-      <div className="flex items-center justify-center text-muted-foreground/40 text-sm h-full">
-        Espace publicitaire - AdSense
-      </div>
 
       <div className="absolute top-1 left-2 text-[10px] text-muted-foreground/60 font-mono">
         pub
