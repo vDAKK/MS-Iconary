@@ -34,7 +34,6 @@ export const AdCard = ({ adSlot, style }: AdCardProps) => {
         transition-all duration-smooth ease-out
         hover:-translate-y-1 hover:scale-[1.02]
         animate-fade-in
-        min-h-[180px] flex flex-col justify-center items-center
       "
       style={style}
     >
@@ -51,14 +50,13 @@ export const AdCard = ({ adSlot, style }: AdCardProps) => {
       </Badge>
 
       {/* Zone publicitaire avec fallback */}
-      <div className="relative w-full h-full flex items-center justify-center">
+      <div className="relative flex items-center justify-center h-12 w-12 mx-auto mb-4">
         <ins
           className="adsbygoogle"
           style={{ 
             display: 'block', 
             width: '100%', 
-            height: '120px',
-            minHeight: '120px'
+            height: '48px'
           }}
           data-ad-client="ca-pub-4484520636329323"
           data-ad-slot={adSlot}
@@ -67,27 +65,24 @@ export const AdCard = ({ adSlot, style }: AdCardProps) => {
         ></ins>
         
         {/* Contenu de fallback stylisé comme les icônes */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          {/* Icône stylisée comme dans IconCard */}
-          <div className="
-            relative w-10 h-10 rounded-lg mb-4
-            bg-gradient-to-br from-secondary to-muted
-            border border-border/40
-            flex items-center justify-center
-            transition-all duration-smooth
-            group-hover:from-accent/15 group-hover:to-accent/8
-            group-hover:border-accent/30 group-hover:shadow-md group-hover:scale-105
-            shadow-sm
-          ">
-            <div className="text-2xl">📢</div>
-          </div>
-          
-          {/* Nom stylisé comme dans IconCard */}
-          <p className="text-sm text-center text-muted-foreground group-hover:text-foreground transition-colors duration-smooth font-medium">
-            Publicité
-          </p>
+        <div className="
+          relative w-10 h-10 rounded-lg 
+          bg-gradient-to-br from-secondary to-muted
+          border border-border/40
+          flex items-center justify-center
+          transition-all duration-smooth
+          group-hover:from-accent/15 group-hover:to-accent/8
+          group-hover:border-accent/30 group-hover:shadow-md group-hover:scale-105
+          shadow-sm
+        ">
+          <div className="text-2xl">📢</div>
         </div>
       </div>
+      
+      {/* Nom stylisé comme dans IconCard */}
+      <p className="relative text-sm text-center text-muted-foreground group-hover:text-foreground transition-colors duration-smooth font-medium">
+        Publicité
+      </p>
 
       {/* Effet shimmer subtil */}
       <div className="
