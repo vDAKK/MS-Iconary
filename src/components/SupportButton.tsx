@@ -39,8 +39,7 @@ export const SupportButton = () => {
       <DialogTrigger asChild>
         <Button 
           variant="outline" 
-          size="sm"
-          className="gap-2 hover:bg-primary/10 hover:text-primary hover:border-primary/50 transition-all duration-smooth"
+          className="h-12 px-4 rounded-xl gap-2 hover:bg-primary/10 hover:text-primary hover:border-primary/50 transition-all duration-smooth"
         >
           <Heart className="w-4 h-4 fill-red-500 text-red-500" />
           Soutenir le projet

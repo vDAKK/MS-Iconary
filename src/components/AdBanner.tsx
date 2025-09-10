@@ -31,11 +31,11 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
 
   if (!isVisible) return null;
 
-  const baseClasses = "relative bg-gradient-to-r from-muted/30 to-muted/10 border border-border/50 rounded-lg p-4 animate-fade-in";
+  const baseClasses = "relative bg-gradient-to-r from-muted/30 to-muted/10 border border-border/50 rounded-lg p-3 animate-fade-in";
   const positionClasses = {
-    top: "max-w-4xl mx-auto mb-6",
-    sidebar: "max-w-sm",
-    bottom: "max-w-4xl mx-auto mt-6"
+    top: "max-w-4xl mx-auto mb-4 h-16",
+    sidebar: "max-w-sm h-20", 
+    bottom: "max-w-4xl mx-auto mt-4 h-16"
   };
 
   return (
@@ -51,12 +51,17 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
 
       <ins
         className="adsbygoogle w-full block"
-        style={{ display: 'block', width: '100%' }}
+        style={{ display: 'block', width: '100%', height: '50px' }}
         data-ad-client="ca-pub-4484520636329323" // Remplace ici par ton client AdSense
         data-ad-slot={adSlot}
         data-ad-format="auto"
         data-full-width-responsive="true"
       ></ins>
+
+      {/* Contenu de démonstration en attendant les vraies pubs */}
+      <div className="flex items-center justify-center text-muted-foreground/40 text-sm h-full">
+        Espace publicitaire - AdSense
+      </div>
 
       <div className="absolute top-1 left-2 text-[10px] text-muted-foreground/60 font-mono">
         pub
