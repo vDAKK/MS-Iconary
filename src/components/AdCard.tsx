@@ -27,19 +27,19 @@ export const AdCard = ({ adSlot, style }: AdCardProps) => {
 
   return (
     <div 
-      className="group relative bg-card border border-border/50 rounded-xl p-4 hover:border-border transition-all duration-300 hover:shadow-lg backdrop-blur-sm min-h-[180px] flex flex-col justify-center items-center animate-fade-in"
+      className="group relative bg-gradient-to-br from-purple-500/10 via-pink-500/10 to-orange-500/10 border-2 border-dashed border-purple-300/50 rounded-xl p-4 transition-all duration-300 hover:border-purple-400 hover:shadow-lg backdrop-blur-sm min-h-[180px] flex flex-col justify-center items-center animate-fade-in"
       style={style}
     >
-      {/* Badge "Publicité" */}
+      {/* Badge "Publicité" très visible */}
       <Badge 
         variant="secondary" 
-        className="absolute top-2 right-2 text-[10px] px-2 py-1 bg-muted/80 text-muted-foreground"
+        className="absolute top-2 right-2 text-[10px] px-2 py-1 bg-purple-500 text-white font-bold"
       >
         Pub
       </Badge>
 
-      {/* Zone publicitaire */}
-      <div className="w-full h-full flex items-center justify-center">
+      {/* Zone publicitaire avec fallback visible */}
+      <div className="w-full h-full flex items-center justify-center relative">
         <ins
           className="adsbygoogle"
           style={{ 
@@ -54,17 +54,18 @@ export const AdCard = ({ adSlot, style }: AdCardProps) => {
           data-full-width-responsive="true"
         ></ins>
         
-        {/* Contenu de fallback pendant le chargement */}
-        {!isLoaded && (
-          <div className="absolute inset-4 flex flex-col items-center justify-center text-muted-foreground/60 text-center">
-            <div className="w-12 h-12 bg-muted/30 rounded-lg mb-2 flex items-center justify-center">
-              📢
-            </div>
-            <div className="text-xs">
-              Espace publicitaire
-            </div>
+        {/* Contenu de fallback très visible */}  
+        <div className="absolute inset-4 flex flex-col items-center justify-center text-purple-600 text-center bg-white/80 rounded-lg">
+          <div className="w-12 h-12 bg-purple-100 rounded-lg mb-2 flex items-center justify-center text-2xl">
+            📢
           </div>
-        )}
+          <div className="text-xs font-semibold">
+            Espace publicitaire
+          </div>
+          <div className="text-[10px] text-purple-500 mt-1">
+            Slot: {adSlot}
+          </div>
+        </div>
       </div>
     </div>
   );

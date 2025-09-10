@@ -135,6 +135,32 @@ const Index = () => {
     resetInfiniteScroll();
   }, [processedIcons, resetInfiniteScroll]);
 
+  // Fonction pour mélanger les icônes avec des publicités
+  const mixIconsWithAds = useMemo(() => {
+    console.log('visibleIcons length:', visibleIcons.length);
+    const result: any[] = [];
+    const adInterval = 8; // Une pub toutes les 8 icônes pour plus de visibilité
+    
+    visibleIcons.forEach((icon, index) => {
+      // Ajouter l'icône
+      result.push({ ...icon, type: 'icon' });
+      
+      // Ajouter une pub après certaines icônes 
+      if ((index + 1) % adInterval === 0) {
+        const adId = `ad-${Math.floor(index / adInterval)}`;
+        result.push({ 
+          type: 'ad', 
+          id: adId,
+          adSlot: `${7891234560 + Math.floor(index / adInterval)}` // Slots différents pour chaque pub
+        });
+        console.log('Added ad at position:', result.length - 1, 'with slot:', `${7891234560 + Math.floor(index / adInterval)}`);
+      }
+    });
+    
+    console.log('mixIconsWithAds result length:', result.length);
+    return result;
+  }, [visibleIcons]);
+
   // SEO dynamique basé sur la recherche
   const seoTitle = searchQuery 
     ? `${searchQuery} - Icônes SVG Microsoft | MS-Iconary`
@@ -236,24 +262,38 @@ const Index = () => {
             <SupportButton />
           </div>
 
-          {visibleIcons.length > 0 ? (
+          {mixIconsWithAds.length > 0 ? (
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
-                {visibleIcons.map((icon, index) => (
-                  <IconCard
-                    key={`${icon.name}-${index}`}
-                    name={icon.name}
-                    svg={icon.svg}
-                    filePath={icon.filePath}
-                    isAdminMode={isAdminMode}
-                    onDelete={handleDeleteIcon}
-                    isFavorite={isFavorite(icon.name)}
-                    onToggleFavorite={toggleFavorite}
-                    style={{
-                      animationDelay: `${(index % 12) * 50}ms`
-                    }}
-                  />
-                ))}
+                {mixIconsWithAds.map((item, index) => {
+                  if (item.type === 'ad') {
+                    return (
+                      <AdCard
+                        key={item.id}
+                        adSlot={item.adSlot}
+                        style={{
+                          animationDelay: `${(index % 12) * 50}ms`
+                        }}
+                      />
+                    );
+                  }
+                  
+                  return (
+                    <IconCard
+                      key={`${item.name}-${index}`}
+                      name={item.name}
+                      svg={item.svg}
+                      filePath={item.filePath}
+                      isAdminMode={isAdminMode}
+                      onDelete={handleDeleteIcon}
+                      isFavorite={isFavorite(item.name)}
+                      onToggleFavorite={toggleFavorite}
+                      style={{
+                        animationDelay: `${(index % 12) * 50}ms`
+                      }}
+                    />
+                  );
+                })}
               </div>
               
               {/* Indicateur de chargement */}
@@ -265,7 +305,7 @@ const Index = () => {
               )}
               
               {/* Indicateur de fin */}
-              {!hasMore && processedIcons.length > 24 && (
+              {processedIcons.length > 24 && (
                 <div className="text-center py-8 text-muted-foreground text-sm">
                   Toutes les icônes ont été affichées
                 </div>
