@@ -218,7 +218,7 @@ export const IconCard = ({
   const createConfettiEffect = (buttonRect: DOMRect) => {
     const colors = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6'];
     
-    for (let i = 0; i < 15; i++) {
+    for (let i = 0; i < 12; i++) {
       const confetti = document.createElement('div');
       confetti.className = 'fixed w-2 h-2 rounded-full pointer-events-none z-50';
       confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
@@ -227,23 +227,25 @@ export const IconCard = ({
       
       document.body.appendChild(confetti);
       
-      const angle = (Math.PI * 2 * i) / 15;
-      const velocity = 50 + Math.random() * 50;
-      const gravity = 0.5;
+      // Angle plus concentré vers le haut
+      const angle = -Math.PI/2 + (Math.random() - 0.5) * Math.PI/2;
+      const velocity = 25 + Math.random() * 25;
+      const gravity = 0.3;
       let vx = Math.cos(angle) * velocity;
       let vy = Math.sin(angle) * velocity;
       let x = 0;
       let y = 0;
       
       const animate = () => {
-        x += vx;
-        y += vy;
+        x += vx * 0.8;
+        y += vy * 0.8;
         vy += gravity;
+        vx *= 0.98;
         
-        confetti.style.transform = `translate(${x}px, ${y}px) rotate(${x * 2}deg)`;
-        confetti.style.opacity = Math.max(0, 1 - Math.abs(y) / 200).toString();
+        confetti.style.transform = `translate(${x}px, ${y}px) rotate(${x * 1.5}deg)`;
+        confetti.style.opacity = Math.max(0, 1 - Math.abs(y) / 150).toString();
         
-        if (Math.abs(y) < 200) {
+        if (Math.abs(y) < 150) {
           requestAnimationFrame(animate);
         } else {
           document.body.removeChild(confetti);
@@ -255,33 +257,34 @@ export const IconCard = ({
   };
 
   const createDisintegrationEffect = (buttonRect: DOMRect) => {
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 6; i++) {
       const particle = document.createElement('div');
-      particle.className = 'fixed w-1 h-1 bg-red-500 pointer-events-none z-50 opacity-80';
+      particle.className = 'fixed w-1.5 h-1.5 bg-red-500 rounded-full pointer-events-none z-50 opacity-90';
       particle.style.left = buttonRect.left + buttonRect.width / 2 + 'px';
       particle.style.top = buttonRect.top + buttonRect.height / 2 + 'px';
       
       document.body.appendChild(particle);
       
-      const angle = (Math.PI * 2 * i) / 8;
-      const velocity = 30 + Math.random() * 20;
+      // Dispersion plus douce et concentrée
+      const angle = (Math.PI * 2 * i) / 6 + (Math.random() - 0.5) * 0.3;
+      const velocity = 15 + Math.random() * 10;
       let vx = Math.cos(angle) * velocity;
       let vy = Math.sin(angle) * velocity;
       let x = 0;
       let y = 0;
-      let opacity = 0.8;
+      let opacity = 0.9;
       
       const animate = () => {
-        x += vx;
-        y += vy;
-        vx *= 0.95;
-        vy *= 0.95;
-        opacity *= 0.92;
+        x += vx * 0.7;
+        y += vy * 0.7;
+        vx *= 0.96;
+        vy *= 0.96;
+        opacity *= 0.95;
         
-        particle.style.transform = `translate(${x}px, ${y}px)`;
+        particle.style.transform = `translate(${x}px, ${y}px) scale(${opacity})`;
         particle.style.opacity = opacity.toString();
         
-        if (opacity > 0.01) {
+        if (opacity > 0.05) {
           requestAnimationFrame(animate);
         } else {
           document.body.removeChild(particle);
