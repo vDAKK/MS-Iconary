@@ -20,7 +20,7 @@ export const GoogleAdsense = ({
       if (typeof window !== 'undefined' && !(window as any).adsbygoogle) {
         const script = document.createElement('script');
         script.async = true;
-        script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=4484520636329323';
+        script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4484520636329323';
         script.crossOrigin = 'anonymous';
         document.head.appendChild(script);
       }
@@ -39,7 +39,7 @@ export const GoogleAdsense = ({
       <ins
         className="adsbygoogle"
         style={adStyle}
-        data-ad-client="4484520636329323" // À remplacer par votre ID client AdSense
+        data-ad-client="ca-pub-4484520636329323" // À remplacer par votre ID client AdSense
         data-ad-slot={adSlot}
         data-ad-format={adFormat}
         data-full-width-responsive="true"
