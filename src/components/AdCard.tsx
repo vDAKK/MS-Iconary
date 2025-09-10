@@ -10,27 +10,20 @@ export const AdCard = ({ adSlot, style }: AdCardProps) => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    const initializeAd = () => {
+    const timer = setTimeout(() => {
       try {
-        if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
-          const adElement = document.querySelector(`ins[data-ad-slot="${adSlot}"]`);
-          if (adElement) {
-            (window as any).adsbygoogle.push({});
-            setIsLoaded(true);
-            console.log(`AdSense card initialized for slot: ${adSlot}`);
-          }
+        if (typeof window !== 'undefined') {
+          (window as any).adsbygoogle = (window as any).adsbygoogle || [];
+          (window as any).adsbygoogle.push({});
+          setIsLoaded(true);
         }
       } catch (e) {
         console.error('AdSense card error:', e);
       }
-    };
-
-    // Délai aléatoire pour éviter la surcharge + temps pour Google de détecter
-    const delay = Math.random() * 1500 + 1500;
-    const timer = setTimeout(initializeAd, delay);
+    }, Math.random() * 1000 + 500); // Délai aléatoire pour éviter la surcharge
 
     return () => clearTimeout(timer);
-  }, [adSlot]);
+  }, []);
 
   return (
     <div 
@@ -57,10 +50,8 @@ export const AdCard = ({ adSlot, style }: AdCardProps) => {
           }}
           data-ad-client="ca-pub-4484520636329323"
           data-ad-slot={adSlot}
-          data-ad-format="fluid"
-          data-ad-layout="in-article"
+          data-ad-format="auto"
           data-full-width-responsive="true"
-          data-ad-test="on"
         ></ins>
         
         {/* Contenu de fallback très visible */}  
