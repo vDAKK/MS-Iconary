@@ -202,7 +202,7 @@ export const IconCard = ({
     e.stopPropagation();
     onToggleFavorite?.(name);
   };
-  return (
+   return (
     <div className={`
         relative group cursor-pointer rounded-xl p-6 
         glass border border-border/50
@@ -210,8 +210,9 @@ export const IconCard = ({
         transition-all duration-smooth ease-out
         hover:-translate-y-1 hover:scale-[1.02]
         animate-fade-in
+        ${isFavorite ? 'before:absolute before:inset-0 before:rounded-xl before:bg-gradient-to-br before:from-red-500/5 before:via-transparent before:to-red-500/5 before:opacity-60 before:pointer-events-none' : ''}
         ${className}
-      `} 
+      `}
       style={style} 
       onMouseEnter={() => {
         setIsHovered(true);
