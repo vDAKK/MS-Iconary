@@ -12,6 +12,7 @@ let adsenseScriptInjected = false;
 
 export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) => {
   const [isVisible, setIsVisible] = useState(true);
+  const [adLoaded, setAdLoaded] = useState(false);
 
   useEffect(() => {
     // Afficher les pubs dans tous les cas, personnalisées ou non selon le consentement
@@ -31,6 +32,7 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
           ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push(adConfig);
           // Pousser l'élément pour l'initialiser
           ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+          setAdLoaded(true);
         } catch (e) {
           console.log('AdSense push error:', e);
         }
@@ -60,14 +62,23 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
         <X className="h-3 w-3" />
       </Button>
 
+      {/* Affichage conditionnel : vraie pub ou contenu de prévisualisation */}
+      {!adLoaded && (
+        <div className="flex items-center justify-center text-muted-foreground/60 text-sm h-full absolute inset-0">
+          <div className="text-center">
+            <div className="text-xs opacity-75 mb-1">📢 Publicité</div>
+            <div className="text-xs">AdSense • Contenu fixe dans ce bloc</div>
+          </div>
+        </div>
+      )}
+
       <ins
         className="adsbygoogle w-full block"
-        style={{ display: 'block', width: '100%', height: '90px', minHeight: '90px' }}
+        style={{ display: 'block', width: '100%', height: '100%' }}
         data-ad-client="ca-pub-4484520636329323"
         data-ad-slot={adSlot}
-        data-ad-format="horizontal"
-        data-full-width-responsive="false"
-        data-ad-layout="in-article"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
       ></ins>
 
       <div className="absolute top-1 left-2 text-[10px] text-muted-foreground/60 font-mono">
