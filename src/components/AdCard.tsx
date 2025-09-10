@@ -35,8 +35,12 @@ export const AdCard = ({ adSlot, style }: AdCardProps) => {
         hover:-translate-y-1 hover:scale-[1.02]
         animate-fade-in
         before:absolute before:inset-0 before:rounded-xl 
-        before:bg-gradient-to-br before:from-accent/5 before:via-transparent before:to-accent/5
-        before:opacity-50 before:animate-pulse before:pointer-events-none
+        before:bg-gradient-to-r before:from-accent/10 before:via-primary/5 before:to-accent/10
+        before:opacity-0 before:animate-pulse before:pointer-events-none
+        hover:before:opacity-100
+        after:absolute after:inset-0 after:rounded-xl after:pointer-events-none
+        after:bg-gradient-to-br after:from-transparent after:via-accent/5 after:to-transparent
+        after:animate-[shimmer_3s_ease-in-out_infinite] after:bg-[length:200%_200%]
       "
       style={style}
     >
