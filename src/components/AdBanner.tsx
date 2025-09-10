@@ -29,6 +29,8 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
           }
           
           ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push(adConfig);
+          // Pousser l'élément pour l'initialiser
+          ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
         } catch (e) {
           console.log('AdSense push error:', e);
         }
@@ -57,14 +59,6 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
       >
         <X className="h-3 w-3" />
       </Button>
-
-      {/* Contenu de démonstration - sera remplacé par AdSense */}
-      <div className="flex items-center justify-center text-muted-foreground/60 text-sm h-full">
-        <div className="text-center">
-          <div className="text-xs opacity-75 mb-1">📢 Publicité</div>
-          <div className="text-xs">AdSense • Contenu fixe dans ce bloc</div>
-        </div>
-      </div>
 
       <ins
         className="adsbygoogle w-full block"
