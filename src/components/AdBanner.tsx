@@ -14,18 +14,12 @@ export const AdBanner = ({ position, className = "", adSlot }: AdBannerProps) =>
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
-    // Le script AdSense est déjà chargé dans index.html
-    // Déclencher l'affichage des annonces après un délai
+    // Le script AdSense est déjà chargé dans index.html avec la config globale
+    // Déclencher seulement l'affichage des annonces spécifiques
     const timer = setTimeout(() => {
       if (typeof window !== 'undefined' && (window as any).adsbygoogle) {
         try {
-          // Forcer AdSense à rester dans le conteneur
-          ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({
-            google_ad_client: "ca-pub-4484520636329323",
-            enable_page_level_ads: false,
-            overlays: {bottom: false},
-            auto_ad_client: false
-          });
+          ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
         } catch (e) {
           console.log('AdSense push error:', e);
         }

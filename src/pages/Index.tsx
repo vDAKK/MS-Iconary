@@ -13,7 +13,6 @@ import { iconsData, deleteIcon } from '@/data/icons';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useInfiniteScroll } from '@/hooks/useInfiniteScroll';
 import { Sparkles, Copy, Download, Search, Loader2, Shield } from 'lucide-react';
-import { GoogleAdsense } from '@/components/GoogleAdsense';
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
