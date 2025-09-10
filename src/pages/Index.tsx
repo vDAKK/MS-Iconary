@@ -6,6 +6,8 @@ import { SEOHead } from '@/components/SEOHead';
 import { AdminPasswordModal } from '@/components/AdminPasswordModal';
 import { HiddenIconsManager } from '@/components/HiddenIconsManager';
 import { AdvancedFilters, FilterOptions } from '@/components/AdvancedFilters';
+import { AdBanner } from '@/components/AdBanner';
+import { SupportButton } from '@/components/SupportButton';
 import { ScrollToTop } from '@/components/ScrollToTop';
 import { iconsData, deleteIcon } from '@/data/icons';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -165,9 +167,10 @@ const Index = () => {
         {/* Header */}
         <header className="relative border-b border-border/30 glass backdrop-blur-xl" role="banner">
           <div className="container mx-auto px-6 py-12">
-            {/* Toggle de thème */}
+            {/* Toggle de thème et bouton de support */}
             <div className="absolute top-6 right-6 flex gap-2">
               {isAdminMode && <HiddenIconsManager />}
+              <SupportButton />
               <ThemeToggle />
             </div>
             
@@ -215,6 +218,9 @@ const Index = () => {
             </div>
           </div>
         </header>
+
+        {/* Bannière publicitaire discrète */}
+        <AdBanner position="top" />
 
         {/* Grille d'icônes avec scroll infini */}
         <main className="container mx-auto px-6 py-12" role="main">
@@ -318,6 +324,9 @@ const Index = () => {
             </div>
           )}
         </main>
+
+        {/* Bannière publicitaire discrète en bas */}
+        <AdBanner position="bottom" />
 
         {/* Footer */}
         <footer className="border-t border-border/30 glass backdrop-blur-xl mt-auto" role="contentinfo">
