@@ -7,7 +7,6 @@ import { SEOHead } from '@/components/SEOHead';
 import { AdminPasswordModal } from '@/components/AdminPasswordModal';
 import { HiddenIconsManager } from '@/components/HiddenIconsManager';
 import { AdvancedFilters, FilterOptions } from '@/components/AdvancedFilters';
-import { AdBanner } from '@/components/AdBanner';
 import { SupportButton } from '@/components/SupportButton';
 import { ScrollToTop } from '@/components/ScrollToTop';
 import { iconsData, deleteIcon } from '@/data/icons';
@@ -145,16 +144,6 @@ const Index = () => {
       // Ajouter l'icône
       result.push({ ...icon, type: 'icon' });
       
-      // Ajouter une pub après certaines icônes 
-      if ((index + 1) % adInterval === 0) {
-        const adId = `ad-${Math.floor(index / adInterval)}`;
-        result.push({ 
-          type: 'ad', 
-          id: adId,
-          adSlot: `${7891234560 + Math.floor(index / adInterval)}` // Slots différents pour chaque pub
-        });
-        console.log('Added ad at position:', result.length - 1, 'with slot:', `${7891234560 + Math.floor(index / adInterval)}`);
-      }
     });
     
     console.log('mixIconsWithAds result length:', result.length);
@@ -245,9 +234,6 @@ const Index = () => {
           </div>
         </header>
 
-        {/* Bannière publicitaire discrète */}
-        <AdBanner position="top" adSlot="1234567890" />
-
         {/* Grille d'icônes avec scroll infini */}
         <main className="container mx-auto px-6 py-12" role="main">
           {/* Bouton filtres et support au-dessus des icônes */}
@@ -266,17 +252,6 @@ const Index = () => {
             <>
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 gap-4">
                 {mixIconsWithAds.map((item, index) => {
-                  if (item.type === 'ad') {
-                    return (
-                      <AdCard
-                        key={item.id}
-                        adSlot={item.adSlot}
-                        style={{
-                          animationDelay: `${(index % 12) * 50}ms`
-                        }}
-                      />
-                    );
-                  }
                   
                   return (
                     <IconCard
@@ -365,9 +340,6 @@ const Index = () => {
             </div>
           )}
         </main>
-
-        {/* Bannière publicitaire discrète en bas */}
-        <AdBanner position="bottom" adSlot="0987654321" />
 
         {/* Footer */}
         <footer className="border-t border-border/30 glass backdrop-blur-xl mt-auto" role="contentinfo">
